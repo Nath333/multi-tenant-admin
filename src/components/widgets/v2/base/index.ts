@@ -29,13 +29,17 @@ export {
 // Nested Table Editor (for columns, circuits, etc.)
 export {
   default as NestedTableEditor,
+  type ColumnDefinition,
+  type NestedItem,
+} from './NestedTableEditor';
+
+// Column Definition Helpers
+export {
   textColumn,
   numberColumn,
   switchColumn,
   selectColumn,
-  type ColumnDefinition,
-  type NestedItem,
-} from './NestedTableEditor';
+} from './columnHelpers';
 
 // Form Field Components
 export {
