@@ -3,15 +3,20 @@
  * Shows configuration panel alongside the widget instead of hiding it in a drawer
  */
 
-import { useEffect, useState, useRef } from 'react';
-import { Form, Input, Select, Switch, Slider, Tabs, Divider, Button } from 'antd';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
+import { Form, Input, Select, Switch, Slider, Tabs, Divider, Button, Tooltip, Badge } from 'antd';
 import {
   SaveOutlined,
   CloseOutlined,
   SettingOutlined,
   EyeOutlined,
   ExpandOutlined,
-  CompressOutlined
+  CompressOutlined,
+  UndoOutlined,
+  ZoomInOutlined,
+  ZoomOutOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
 import type { Widget } from '../../../store/widgetStore';
 import WidgetConfigForm from '../forms/WidgetConfigForm';
@@ -43,6 +48,8 @@ const BORDER_RADIUS_MARKS = {
   24: '24px',
 } as const;
 
+const ZOOM_LEVELS = [0.5, 0.75, 1, 1.25, 1.5];
+
 const INPUT_STYLE = { borderRadius: 6, fontSize: 13 } as const;
 
 export default function InlineWidgetConfigurator({
@@ -53,10 +60,15 @@ export default function InlineWidgetConfigurator({
 }: InlineWidgetConfiguratorProps) {
   const [form] = Form.useForm();
   const [previewConfig, setPreviewConfig] = useState<Record<string, unknown>>({});
+  const [initialConfig, setInitialConfig] = useState<Record<string, unknown>>({});
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [changeCount, setChangeCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Initialize form values when widget changes
   useEffect(() => {
     if (widget && visible) {
       const initialValues = {
@@ -65,14 +77,43 @@ export default function InlineWidgetConfigurator({
       };
       form.setFieldsValue(initialValues);
       setPreviewConfig(initialValues);
+      setInitialConfig(initialValues);
+      setHasChanges(false);
+      setChangeCount(0);
+      setZoomLevel(1);
     }
   }, [widget, form, visible]);
 
-  // Close on escape key
+  // Track changes
+  const checkForChanges = useCallback((currentValues: Record<string, unknown>) => {
+    let changes = 0;
+    const keys = new Set([...Object.keys(currentValues), ...Object.keys(initialConfig)]);
+
+    keys.forEach(key => {
+      const current = JSON.stringify(currentValues[key]);
+      const initial = JSON.stringify(initialConfig[key]);
+      if (current !== initial) {
+        changes++;
+      }
+    });
+
+    setChangeCount(changes);
+    setHasChanges(changes > 0);
+  }, [initialConfig]);
+
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && visible) {
+      if (!visible) return;
+
+      if (e.key === 'Escape') {
         onCancel();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        handleSave();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault();
+        handleReset();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -82,6 +123,7 @@ export default function InlineWidgetConfigurator({
   const handleFormChange = () => {
     const values = form.getFieldsValue();
     setPreviewConfig(values);
+    checkForChanges(values);
   };
 
   const handleSave = () => {
@@ -95,6 +137,7 @@ export default function InlineWidgetConfigurator({
         },
       });
       form.resetFields();
+      setHasChanges(false);
     });
   };
 
@@ -103,8 +146,29 @@ export default function InlineWidgetConfigurator({
     onCancel();
   };
 
+  const handleReset = () => {
+    form.setFieldsValue(initialConfig);
+    setPreviewConfig(initialConfig);
+    setHasChanges(false);
+    setChangeCount(0);
+  };
+
+  const handleZoomIn = () => {
+    const currentIndex = ZOOM_LEVELS.indexOf(zoomLevel);
+    if (currentIndex < ZOOM_LEVELS.length - 1) {
+      setZoomLevel(ZOOM_LEVELS[currentIndex + 1]);
+    }
+  };
+
+  const handleZoomOut = () => {
+    const currentIndex = ZOOM_LEVELS.indexOf(zoomLevel);
+    if (currentIndex > 0) {
+      setZoomLevel(ZOOM_LEVELS[currentIndex - 1]);
+    }
+  };
+
   // Render live preview of the widget
-  const renderLiveWidget = () => {
+  const renderLiveWidget = useMemo(() => {
     if (!widget) return null;
 
     const registration = widgetRegistry.get(widget.type);
@@ -147,7 +211,7 @@ export default function InlineWidgetConfigurator({
         </div>
       );
     }
-  };
+  }, [widget, previewConfig]);
 
   const renderGeneralSettings = () => (
     <div className={styles.formSection}>
@@ -284,22 +348,66 @@ export default function InlineWidgetConfigurator({
               <EyeOutlined />
               <span>LIVE PREVIEW</span>
             </div>
-            <Button
-              type="text"
-              size="small"
-              icon={isExpanded ? <CompressOutlined /> : <ExpandOutlined />}
-              onClick={() => setIsExpanded(!isExpanded)}
-              className={styles.expandButton}
-            />
+            <div className={styles.previewControls}>
+              <Tooltip title="Zoom out">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<ZoomOutOutlined />}
+                  onClick={handleZoomOut}
+                  disabled={zoomLevel === ZOOM_LEVELS[0]}
+                  className={styles.zoomButton}
+                />
+              </Tooltip>
+              <span className={styles.zoomLevel}>{Math.round(zoomLevel * 100)}%</span>
+              <Tooltip title="Zoom in">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<ZoomInOutlined />}
+                  onClick={handleZoomIn}
+                  disabled={zoomLevel === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]}
+                  className={styles.zoomButton}
+                />
+              </Tooltip>
+              <div className={styles.controlDivider} />
+              <Tooltip title={isExpanded ? 'Collapse' : 'Expand'}>
+                <Button
+                  type="text"
+                  size="small"
+                  icon={isExpanded ? <CompressOutlined /> : <ExpandOutlined />}
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className={styles.expandButton}
+                />
+              </Tooltip>
+            </div>
           </div>
           <div className={styles.previewContent}>
-            <div className={styles.widgetWrapper}>
-              {renderLiveWidget()}
+            <div
+              className={styles.widgetWrapper}
+              style={{ transform: `scale(${zoomLevel})` }}
+            >
+              {renderLiveWidget}
             </div>
           </div>
           <div className={styles.previewFooter}>
-            <span className={styles.previewHint}>
-              Changes update in real-time
+            <div className={styles.statusIndicator}>
+              {hasChanges ? (
+                <>
+                  <ExclamationCircleOutlined className={styles.unsavedIcon} />
+                  <span className={styles.unsavedText}>
+                    {changeCount} unsaved {changeCount === 1 ? 'change' : 'changes'}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <CheckCircleOutlined className={styles.savedIcon} />
+                  <span className={styles.savedText}>All changes saved</span>
+                </>
+              )}
+            </div>
+            <span className={styles.shortcutHint}>
+              Ctrl+S to save • Esc to close
             </span>
           </div>
         </div>
@@ -312,7 +420,20 @@ export default function InlineWidgetConfigurator({
                 <SettingOutlined />
               </div>
               <div className={styles.headerText}>
-                <h3 className={styles.headerTitle}>Configure Widget</h3>
+                <h3 className={styles.headerTitle}>
+                  Configure Widget
+                  {hasChanges && (
+                    <Badge
+                      count={changeCount}
+                      size="small"
+                      style={{
+                        marginLeft: 8,
+                        backgroundColor: '#f59e0b',
+                        fontSize: 10
+                      }}
+                    />
+                  )}
+                </h3>
                 <p className={styles.headerSubtitle}>{widget.title}</p>
               </div>
             </div>
@@ -341,21 +462,33 @@ export default function InlineWidgetConfigurator({
           </div>
 
           <div className={styles.configFooter}>
-            <Button
-              icon={<CloseOutlined />}
-              onClick={handleCancel}
-              className={styles.cancelButton}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="primary"
-              icon={<SaveOutlined />}
-              onClick={handleSave}
-              className={styles.saveButton}
-            >
-              Save Changes
-            </Button>
+            <Tooltip title="Reset to original values (Ctrl+Z)">
+              <Button
+                icon={<UndoOutlined />}
+                onClick={handleReset}
+                disabled={!hasChanges}
+                className={styles.resetButton}
+              >
+                Reset
+              </Button>
+            </Tooltip>
+            <div className={styles.footerActions}>
+              <Button
+                icon={<CloseOutlined />}
+                onClick={handleCancel}
+                className={styles.cancelButton}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="primary"
+                icon={<SaveOutlined />}
+                onClick={handleSave}
+                className={styles.saveButton}
+              >
+                Save Changes
+              </Button>
+            </div>
           </div>
         </div>
       </div>
