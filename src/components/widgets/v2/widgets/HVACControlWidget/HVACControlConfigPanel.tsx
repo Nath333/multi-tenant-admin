@@ -201,8 +201,8 @@ export default function HVACControlConfigPanel({ config, onChange, onClose }: HV
         <Form layout="vertical">
           <LayoutSelector
             value={safeConfig.layout}
-            onChange={(layout) => handleUpdateGlobalSettings({ layout: layout as 'list' | 'grid' | 'compact' })}
-            options={['list', 'grid', 'compact']}
+            onChange={(layout) => handleUpdateGlobalSettings({ layout: layout as 'list' | 'grid' | 'zones' })}
+            options={['list', 'grid', 'zones']}
           />
 
           <Space style={{ width: '100%', justifyContent: 'space-between', marginTop: 16, flexWrap: 'wrap' }}>

@@ -47,20 +47,20 @@ export default function QuickEditPopover({
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(widget.title);
-  const [colorTheme, setColorTheme] = useState(widget.config?.colorTheme || 'blue');
-  const [borderRadius, setBorderRadius] = useState(widget.config?.borderRadius || 8);
-  const [showBorder, setShowBorder] = useState(widget.config?.showBorder ?? true);
-  const [widgetDisabled, setWidgetDisabled] = useState(widget.config?.disabled ?? false);
+  const [colorTheme, setColorTheme] = useState<string>((widget.config?.colorTheme as string) || 'blue');
+  const [borderRadius, setBorderRadius] = useState<number>((widget.config?.borderRadius as number) || 8);
+  const [showBorder, setShowBorder] = useState<boolean>((widget.config?.showBorder as boolean) ?? true);
+  const [widgetDisabled, setWidgetDisabled] = useState<boolean>((widget.config?.disabled as boolean) ?? false);
   const [activeTab, setActiveTab] = useState('general');
 
   // Sync with widget prop changes
   React.useEffect(() => {
     if (open) {
       setTitle(widget.title);
-      setColorTheme(widget.config?.colorTheme || 'blue');
-      setBorderRadius(widget.config?.borderRadius || 8);
-      setShowBorder(widget.config?.showBorder ?? true);
-      setWidgetDisabled(widget.config?.disabled ?? false);
+      setColorTheme((widget.config?.colorTheme as string) || 'blue');
+      setBorderRadius((widget.config?.borderRadius as number) || 8);
+      setShowBorder((widget.config?.showBorder as boolean) ?? true);
+      setWidgetDisabled((widget.config?.disabled as boolean) ?? false);
       // Set form values for widget-specific settings
       form.setFieldsValue(widget.config || {});
     }
@@ -85,10 +85,10 @@ export default function QuickEditPopover({
   const handleCancel = () => {
     // Reset to original values
     setTitle(widget.title);
-    setColorTheme(widget.config?.colorTheme || 'blue');
-    setBorderRadius(widget.config?.borderRadius || 8);
-    setShowBorder(widget.config?.showBorder ?? true);
-    setWidgetDisabled(widget.config?.disabled ?? false);
+    setColorTheme((widget.config?.colorTheme as string) || 'blue');
+    setBorderRadius((widget.config?.borderRadius as number) || 8);
+    setShowBorder((widget.config?.showBorder as boolean) ?? true);
+    setWidgetDisabled((widget.config?.disabled as boolean) ?? false);
     form.setFieldsValue(widget.config || {});
     setActiveTab('general');
     setOpen(false);

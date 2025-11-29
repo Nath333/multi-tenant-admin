@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Tenant } from '../services/mockData';
+import type { Tenant } from '../types';
 import { mockTenants } from '../services/mockData';
 
 interface TenantsState {
