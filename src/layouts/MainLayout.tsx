@@ -24,7 +24,7 @@ import { useFeaturesStore } from '../store/featuresStore';
 import { usePagesStore } from '../store/pagesStore';
 import { useWidgetStore } from '../store/widgetStore';
 import { useIsMobile } from '../hooks/useMediaQuery';
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import * as Icons from '@ant-design/icons';
 
 interface MainLayoutProps {
@@ -47,10 +47,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const { refreshWidgetData } = useWidgetStore();
   const isMobile = useIsMobile();
 
-  const handleTenantSwitch = (tenantId: string) => {
+  const handleTenantSwitch = useCallback((tenantId: string) => {
     switchTenant(tenantId);
     refreshWidgetData(tenantId);
-  };
+  }, [switchTenant, refreshWidgetData]);
 
   const menuData: MenuDataItem[] = useMemo(() => {
     const baseMenu: MenuDataItem[] = [];
@@ -131,12 +131,12 @@ export default function MainLayout({ children }: MainLayoutProps) {
     return [...baseMenu, ...featureMenuItems, ...customPageMenuItems, ...saasMenu, ...systemMenu];
   }, [t, getEnabledFeatures, allPages, user]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     navigate('/login');
-  };
+  }, [logout, navigate]);
 
-  const tenantMenuItems = availableTenants.map(tenant => ({
+  const tenantMenuItems = useMemo(() => availableTenants.map(tenant => ({
     key: tenant.id,
     label: (
       <div>
@@ -149,9 +149,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
       padding: '8px 12px',
       borderRadius: '4px',
     }
-  }));
+  })), [availableTenants, handleTenantSwitch]);
 
-  const userMenuItems = [
+  const userMenuItems = useMemo(() => [
     {
       key: 'profile',
       icon: <UserOutlined />,
@@ -166,7 +166,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       label: t('auth.logout'),
       onClick: handleLogout,
     },
-  ];
+  ], [t, handleLogout]);
 
   return (
     <ProLayout

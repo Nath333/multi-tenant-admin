@@ -50,37 +50,43 @@ export function ColorPickerField({
 // LayoutSelector Component
 // ============================================================================
 
-interface LayoutSelectorProps {
+// All supported layout types across different widget configurations
+export type LayoutType = 'grid' | 'tabs' | 'carousel' | 'list' | 'compact' | 'single' | 'multi' | 'zones';
+
+interface LayoutSelectorProps<T extends string = LayoutType> {
   label?: string;
-  value: 'grid' | 'tabs' | 'carousel' | 'list' | 'compact';
-  onChange: (layout: 'grid' | 'tabs' | 'carousel' | 'list' | 'compact') => void;
-  options?: Array<'grid' | 'tabs' | 'carousel' | 'list' | 'compact'>;
+  value: T;
+  onChange: (layout: T) => void;
+  options?: T[];
   disabled?: boolean;
   className?: string;
 }
 
-export function LayoutSelector({
+export function LayoutSelector<T extends string = LayoutType>({
   label = 'Layout Mode',
   value,
   onChange,
-  options = ['grid', 'tabs', 'carousel'],
+  options = ['grid', 'tabs', 'carousel'] as T[],
   disabled = false,
   className,
-}: LayoutSelectorProps) {
+}: LayoutSelectorProps<T>) {
   const layoutLabels: Record<string, string> = {
     grid: 'Grid',
     tabs: 'Tabs',
     carousel: 'Carousel',
     list: 'List',
     compact: 'Compact',
+    single: 'Single',
+    multi: 'Multi',
+    zones: 'Zones',
   };
 
   return (
     <Form.Item label={label} className={className}>
-      <Radio.Group value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled}>
+      <Radio.Group value={value} onChange={(e) => onChange(e.target.value as T)} disabled={disabled}>
         {options.map((option) => (
           <Radio key={option} value={option}>
-            {layoutLabels[option]}
+            {layoutLabels[option] || option}
           </Radio>
         ))}
       </Radio.Group>
