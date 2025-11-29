@@ -1,0 +1,1804 @@
+/* Widget Layout Custom Styles */
+
+/* Smooth grid item transitions */
+.react-grid-item {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              height 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, width, height;
+}
+
+.react-grid-item.react-draggable-dragging,
+.react-grid-item.resizing {
+  transition: none;
+}
+
+/* CRITICAL: Placeholder positioning - follows cursor exactly */
+.react-grid-item.react-grid-placeholder {
+  /* Visual styling only - DO NOT touch positioning properties */
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%) !important;
+  border: 3px dashed rgba(102, 126, 234, 0.6) !important;
+  border-radius: 12px !important;
+  opacity: 1 !important;
+  z-index: 100 !important;
+  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2),
+              0 4px 12px rgba(102, 126, 234, 0.15),
+              inset 0 1px 4px rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(8px) saturate(180%) !important;
+  animation: placeholderPulse 2s ease-in-out infinite !important;
+
+  /* CRITICAL: DO NOT override position, top, left, transform, width, height
+     React Grid Layout controls these via inline styles with transform: translate3d()
+     Any override will break cursor following */
+  pointer-events: none !important;
+}
+
+@keyframes placeholderPulse {
+  0%, 100% {
+    border-color: rgba(102, 126, 234, 0.6);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2),
+                0 4px 12px rgba(102, 126, 234, 0.15),
+                inset 0 1px 4px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    border-color: rgba(82, 196, 26, 0.8);
+    box-shadow: 0 16px 48px rgba(82, 196, 26, 0.25),
+                0 6px 16px rgba(82, 196, 26, 0.2),
+                inset 0 2px 6px rgba(255, 255, 255, 0.4);
+  }
+}
+
+/* Widget container animations */
+.widget-container {
+  position: relative;
+}
+
+.widget-container.edit-mode {
+  padding-top: 12px;
+}
+
+/* Drag handle pulse animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+
+.drag-handle {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.drag-handle:hover {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5) !important;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.drag-handle:active {
+  transform: translateX(-50%) scale(0.95);
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* Resize handle styling - ENABLED for free resizing */
+.react-resizable-handle {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 2.5px solid white;
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 3px 12px rgba(102, 126, 234, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  z-index: 100;
+}
+
+.react-grid-item:hover {
+  z-index: 500 !important;
+}
+
+.react-grid-item:hover .react-resizable-handle {
+  opacity: 0.95;
+}
+
+.react-resizable-handle:hover {
+  opacity: 1 !important;
+  transform: scale(1.35);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.4);
+  background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
+}
+
+.react-resizable-handle-se {
+  bottom: -10px;
+  right: -10px;
+  cursor: se-resize;
+}
+
+.react-resizable-handle-sw {
+  bottom: -10px;
+  left: -10px;
+  cursor: sw-resize;
+}
+
+.react-resizable-handle-ne {
+  top: -10px;
+  right: -10px;
+  cursor: ne-resize;
+}
+
+.react-resizable-handle-nw {
+  top: -10px;
+  left: -10px;
+  cursor: nw-resize;
+}
+
+.react-resizable-handle-n {
+  top: -10px;
+  left: 50%;
+  margin-left: -10px;
+  cursor: n-resize;
+}
+
+.react-resizable-handle-s {
+  bottom: -10px;
+  left: 50%;
+  margin-left: -10px;
+  cursor: s-resize;
+}
+
+.react-resizable-handle-e {
+  right: -10px;
+  top: 50%;
+  margin-top: -10px;
+  cursor: e-resize;
+}
+
+.react-resizable-handle-w {
+  left: -10px;
+  top: 50%;
+  margin-top: -10px;
+  cursor: w-resize;
+}
+
+/* Grid layout styles */
+.react-grid-layout {
+  position: relative;
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Grid guides - visible in edit mode */
+.layout.edit-mode-active {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(102, 126, 234, 0.03) 0px,
+      rgba(102, 126, 234, 0.03) 1px,
+      transparent 1px,
+      transparent 96px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(102, 126, 234, 0.05) 0px,
+      rgba(102, 126, 234, 0.05) 1px,
+      transparent 1px,
+      transparent calc(100% / 12)
+    );
+  background-size: 96px 96px, 100% 100%;
+  background-position: 0 0, 0 0;
+}
+
+/* Dragging state - Enhanced with fixed size */
+.react-grid-item.react-draggable-dragging {
+  transition: none;
+  z-index: 1000;
+  opacity: 0.98;
+  transform: scale(1.03) rotate(1deg);
+  box-shadow: 0 24px 64px rgba(102, 126, 234, 0.5),
+              0 12px 32px rgba(118, 75, 162, 0.3),
+              0 0 0 2px rgba(102, 126, 234, 0.4);
+  filter: brightness(1.08);
+  cursor: grabbing !important;
+}
+
+.react-grid-item.react-draggable-dragging * {
+  cursor: grabbing !important;
+  pointer-events: none;
+}
+
+/* Widget at boundary - visual indicator */
+.react-grid-item.at-boundary {
+  animation: boundaryPulse 0.5s ease-in-out;
+}
+
+@keyframes boundaryPulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.5),
+                0 4px 12px rgba(255, 193, 7, 0.3);
+  }
+}
+
+/* Resizing state - Enhanced with smooth feedback */
+.react-grid-item.resizing {
+  transition: none;
+  z-index: 999;
+  opacity: 0.95;
+  box-shadow:
+    0 20px 60px rgba(102, 126, 234, 0.4),
+    0 0 0 3px rgba(102, 126, 234, 0.3),
+    0 0 40px rgba(102, 126, 234, 0.2);
+  filter: brightness(1.05);
+}
+
+.react-grid-item.resizing .react-resizable-handle {
+  opacity: 1 !important;
+  transform: scale(1.4);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.6);
+  animation: resizePulse 0.8s ease-in-out infinite;
+}
+
+@keyframes resizePulse {
+  0%, 100% {
+    transform: scale(1.4);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+}
+
+/* Resize dimension indicator */
+.react-grid-item.resizing::after {
+  content: attr(data-dimensions);
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  white-space: nowrap;
+  z-index: 1001;
+  pointer-events: none;
+  animation: fadeInDown 0.2s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Prevent text selection during drag */
+.react-grid-item.react-draggable-dragging,
+.react-grid-item.resizing {
+  user-select: none;
+}
+
+/* Widget fade-in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.widget-container {
+  animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+}
+
+.widget-container:nth-child(1) { animation-delay: 0.05s; }
+.widget-container:nth-child(2) { animation-delay: 0.1s; }
+.widget-container:nth-child(3) { animation-delay: 0.15s; }
+.widget-container:nth-child(4) { animation-delay: 0.2s; }
+.widget-container:nth-child(5) { animation-delay: 0.25s; }
+.widget-container:nth-child(6) { animation-delay: 0.3s; }
+.widget-container:nth-child(7) { animation-delay: 0.35s; }
+.widget-container:nth-child(8) { animation-delay: 0.4s; }
+
+/* Smooth hover effects */
+.widget-container:not(.edit-mode):hover {
+  z-index: 10;
+}
+
+/* Edit mode visual feedback */
+.edit-mode .react-grid-item {
+  cursor: move;
+}
+
+.edit-mode .react-grid-item:active {
+  cursor: grabbing;
+}
+
+/* Loading skeleton for widgets */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.widget-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Empty state animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.ant-empty-image {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .drag-handle {
+    width: 60px;
+    height: 24px;
+  }
+
+  .react-resizable-handle-se {
+    width: 24px;
+    height: 24px;
+  }
+
+  .widget-container.edit-mode {
+    padding-top: 16px;
+  }
+}
+
+/* Dark mode support (if needed) */
+@media (prefers-color-scheme: dark) {
+  .react-grid-item.react-grid-placeholder {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+    border-color: rgba(102, 126, 234, 0.5);
+  }
+}
+
+/* Performance optimizations */
+.react-grid-layout,
+.react-grid-item,
+.widget-container {
+  will-change: transform;
+}
+
+/* Accessibility improvements */
+.drag-handle:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.react-resizable-handle:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Button hover effects */
+.edit-layout-btn:hover,
+.add-widget-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5) !important;
+}
+
+.edit-layout-btn:active,
+.add-widget-btn:active {
+  transform: translateY(0);
+}
+
+/* Modal entrance animation */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ant-modal {
+  animation: slideInDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Category tag hover effects */
+.ant-tag {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ant-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Widget card scale animation */
+@keyframes cardPop {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
+}
+
+/* Glow effect for active elements */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.5), 0 0 10px rgba(102, 126, 234, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.8), 0 0 20px rgba(102, 126, 234, 0.5);
+  }
+}
+
+/* Add subtle parallax effect on scroll */
+@media (prefers-reduced-motion: no-preference) {
+  .widget-container {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+  }
+}
+
+/* Shimmer loading effect for cards */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Gradient border animation */
+@keyframes borderGlow {
+  0%, 100% {
+    border-color: rgba(102, 126, 234, 0.3);
+  }
+  50% {
+    border-color: rgba(102, 126, 234, 0.8);
+  }
+}
+
+/* Bounce effect for new widgets */
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(50px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Widget hover lift effect */
+.widget-container:not(.edit-mode) .widget-inner {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.widget-container:not(.edit-mode):hover .widget-inner {
+  transform: translateY(-4px);
+}
+
+/* Ripple effect on click */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Pulsing dot for active states */
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
+}
+
+/* Search bar focus glow */
+.ant-input-affix-wrapper-focused {
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15), 0 8px 24px rgba(102, 126, 234, 0.2) !important;
+  border-color: #667eea !important;
+}
+
+/* Enhanced card hover with shine effect */
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.widget-card-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.widget-card-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.widget-card-shine:hover::before {
+  left: 100%;
+}
+
+/* Floating animation for empty states */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.floating-element {
+  animation: floatSlow 4s ease-in-out infinite;
+}
+
+/* Gradient text effect */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Button ripple effect */
+.button-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.button-ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.button-ripple:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Skeleton loading for widget placeholders */
+.widget-skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #f8f8f8 50%,
+    #f0f0f0 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Status indicator pulse */
+.status-pulse {
+  position: relative;
+}
+
+.status-pulse::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: inherit;
+  transform: translate(-50%, -50%);
+  animation: pulse-dot 2s infinite;
+}
+
+/* Enhanced shadow depths */
+.shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+.shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
+.shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+.shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+.shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+.shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Smooth page transitions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced focus states for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Tooltip enhancement */
+.ant-tooltip-inner {
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Badge pulse animation */
+.badge-pulse {
+  animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Sticky header enhancement */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s;
+}
+
+.sticky-header.scrolled {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ========================================
+   EDITABLE WIDGET STYLES
+   ======================================== */
+
+/* Editable part wrapper - hover state */
+.editable-part-wrapper {
+  position: relative;
+  display: inline-block;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.editable-part-wrapper.hoverable:hover {
+  background: rgba(102, 126, 234, 0.08);
+  border: 1px dashed rgba(102, 126, 234, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Edit mode indicator badge */
+.edit-indicator-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: badgePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  z-index: 10;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+  }
+}
+
+/* Editing state - inline input */
+.editable-editing-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background: #e6f7ff;
+  border-radius: 6px;
+  border: 2px solid #1890ff;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.2);
+  animation: editingPulse 0.3s ease-out;
+}
+
+@keyframes editingPulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.editable-editing-state .ant-input-sm {
+  min-width: 120px;
+  transition: all 0.2s;
+}
+
+.editable-editing-state .ant-input-sm:focus {
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* Edit action buttons */
+.editable-action-btn {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.editable-action-btn:hover {
+  transform: scale(1.1);
+}
+
+.editable-action-btn:active {
+  transform: scale(0.95);
+}
+
+/* Editable zone wrapper */
+.editable-zone-wrapper {
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.editable-zone-wrapper:hover .zone-action-buttons {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Zone action buttons container */
+.zone-action-buttons {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 20;
+}
+
+.zone-action-buttons .ant-btn {
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.zone-action-buttons .ant-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.zone-action-buttons .ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+/* Widget in edit mode */
+.widget-edit-mode {
+  border: 2px solid #667eea !important;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.widget-edit-mode::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
+  background-size: 200% 200%;
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0.1;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Edit mode toggle button */
+.edit-mode-toggle {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.edit-mode-toggle.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.edit-mode-toggle:hover {
+  transform: translateY(-2px);
+}
+
+.edit-mode-toggle:active {
+  transform: translateY(0);
+}
+
+/* Context menu enhancement */
+.editable-context-menu {
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.editable-context-menu .ant-dropdown-menu-item {
+  transition: all 0.2s;
+}
+
+.editable-context-menu .ant-dropdown-menu-item:hover {
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.08) 0%, rgba(102, 126, 234, 0.04) 100%);
+}
+
+.editable-context-menu .ant-dropdown-menu-item-danger:hover {
+  background: linear-gradient(90deg, rgba(255, 77, 79, 0.08) 0%, rgba(255, 77, 79, 0.04) 100%);
+}
+
+/* Editable tooltip */
+.editable-tooltip .ant-tooltip-inner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+.editable-tooltip .ant-tooltip-arrow-content {
+  background: #667eea;
+}
+
+/* Double-click hint animation */
+@keyframes hintPulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.double-click-hint {
+  animation: hintPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Add zone button */
+.add-zone-button {
+  border: 2px dashed #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.add-zone-button:hover {
+  border-color: #764ba2;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+/* Delete confirmation modal */
+.delete-confirm-modal .ant-modal-confirm-body .ant-modal-confirm-title {
+  color: #ff4d4f;
+  font-weight: 600;
+}
+
+.delete-confirm-modal .ant-btn-dangerous {
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
+  border: none;
+  transition: all 0.2s;
+}
+
+.delete-confirm-modal .ant-btn-dangerous:hover {
+  background: linear-gradient(135deg, #ff7875 0%, #ff4d4f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.4);
+}
+
+/* Success message styling */
+.editable-success-message {
+  background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+}
+
+/* Zone card in edit mode */
+.zone-card-editable {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.zone-card-editable:hover {
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+  transform: translateY(-4px);
+}
+
+.zone-card-editable::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px dashed transparent;
+  border-radius: inherit;
+  transition: all 0.3s;
+  pointer-events: none;
+}
+
+.zone-card-editable:hover::after {
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+/* Editable field focus glow */
+.editable-field-focused {
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15),
+              0 4px 12px rgba(102, 126, 234, 0.2);
+  border-color: #667eea;
+}
+
+/* Drag indicator for reorderable items */
+.drag-indicator {
+  opacity: 0;
+  cursor: grab;
+  transition: opacity 0.2s;
+}
+
+.editable-part-wrapper:hover .drag-indicator {
+  opacity: 0.5;
+}
+
+.drag-indicator:hover {
+  opacity: 1;
+}
+
+.drag-indicator:active {
+  cursor: grabbing;
+}
+
+/* Loading state for editable widgets */
+.editable-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.editable-loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(2px);
+  z-index: 100;
+  border-radius: inherit;
+  animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive adjustments for editable widgets */
+@media (max-width: 768px) {
+  .zone-action-buttons {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .zone-action-buttons .ant-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .editable-editing-state .ant-input-sm {
+    min-width: 100px;
+  }
+
+  .edit-indicator-badge {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+}
+
+/* Dark mode support for editable widgets */
+@media (prefers-color-scheme: dark) {
+  .editable-part-wrapper.hoverable:hover {
+    background: rgba(102, 126, 234, 0.15);
+  }
+
+  .editable-editing-state {
+    background: rgba(24, 144, 255, 0.1);
+    border-color: #4096ff;
+  }
+
+  .widget-edit-mode {
+    border-color: #4096ff !important;
+  }
+
+  .zone-action-buttons .ant-btn {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* Accessibility - keyboard navigation focus */
+.editable-part-wrapper:focus-within {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Smooth entry animation for editable elements */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.editable-part-enter {
+  animation: slideInFromLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .editable-part-wrapper.hoverable:hover {
+    border: 2px solid #667eea;
+  }
+
+  .widget-edit-mode {
+    border-width: 3px !important;
+  }
+}
+
+/* ========================================
+   GRID SNAPPING ENHANCEMENTS
+   ======================================== */
+
+/* Grid cell visual feedback */
+.grid-cell-overlay {
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced grid background in edit mode */
+.layout.edit-mode-active .react-grid-layout {
+  position: relative;
+}
+
+/* Grid cell number labels */
+.grid-cell-label {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* Snap indicator animation */
+@keyframes snapPulse {
+  0%, 100% {
+    border-color: rgba(102, 126, 234, 0.3);
+    background: rgba(102, 126, 234, 0.05);
+  }
+  50% {
+    border-color: rgba(102, 126, 234, 0.6);
+    background: rgba(102, 126, 234, 0.1);
+  }
+}
+
+/* Widget snapping to grid - visual feedback */
+.react-grid-item.snapping {
+  animation: snapPulse 0.6s ease-in-out;
+}
+
+/* Grid lines enhancement */
+.grid-guide-vertical {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(102, 126, 234, 0.2) 20%,
+    rgba(102, 126, 234, 0.2) 80%,
+    transparent 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.grid-guide-horizontal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(102, 126, 234, 0.2) 20%,
+    rgba(102, 126, 234, 0.2) 80%,
+    transparent 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.layout.edit-mode-active:hover .grid-guide-vertical,
+.layout.edit-mode-active:hover .grid-guide-horizontal {
+  opacity: 1;
+}
+
+/* Position indicator tooltip */
+.position-indicator {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  white-space: nowrap;
+  z-index: 1002;
+  pointer-events: none;
+  animation: positionFadeIn 0.2s ease-out;
+  backdrop-filter: blur(8px);
+}
+
+@keyframes positionFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.position-indicator::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid rgba(102, 126, 234, 0.95);
+}
+
+/* Grid measurement overlay */
+.grid-measurement-overlay {
+  position: absolute;
+  pointer-events: none;
+  border: 2px solid rgba(102, 126, 234, 0.4);
+  background: rgba(102, 126, 234, 0.08);
+  border-radius: 6px;
+  transition: all 0.15s ease-out;
+  animation: measurementAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes measurementAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Grid coordinate label */
+.grid-coordinate {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  padding: 2px 6px;
+  background: rgba(102, 126, 234, 0.9);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.5px;
+}
+
+/* Enhanced placeholder with "Place Here" indicator */
+.react-grid-item.react-grid-placeholder::before {
+  content: '✨ Drop Here';
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  padding: 14px 24px !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%) !important;
+  color: #667eea !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  border: 2px solid rgba(102, 126, 234, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3),
+              0 2px 8px rgba(82, 196, 26, 0.15) !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  letter-spacing: 0.8px !important;
+  z-index: 10 !important;
+  animation: placeHerePulse 2s ease-in-out infinite !important;
+  margin: 0 !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+@keyframes placeHerePulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3),
+                0 2px 8px rgba(82, 196, 26, 0.15);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.08);
+    box-shadow: 0 12px 32px rgba(82, 196, 26, 0.4),
+                0 4px 12px rgba(82, 196, 26, 0.25);
+  }
+}
+
+/* Corner position indicators for placeholder - helps debug positioning */
+.react-grid-item.react-grid-placeholder {
+  /* Add corner dots to show exact boundaries */
+  /* DO NOT set position - React Grid Layout controls it */
+}
+
+.react-grid-item.react-grid-placeholder::before {
+  /* Existing "Place Here" text styles already defined above */
+}
+
+/* Top-left corner marker */
+.layout.edit-mode-active .react-grid-item.react-grid-placeholder {
+  background-image:
+    radial-gradient(circle at 8px 8px, rgba(82, 196, 26, 0.8) 6px, transparent 6px),
+    radial-gradient(circle at calc(100% - 8px) 8px, rgba(82, 196, 26, 0.8) 6px, transparent 6px),
+    radial-gradient(circle at 8px calc(100% - 8px), rgba(82, 196, 26, 0.8) 6px, transparent 6px),
+    radial-gradient(circle at calc(100% - 8px) calc(100% - 8px), rgba(82, 196, 26, 0.8) 6px, transparent 6px),
+    linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 100%);
+}
+
+/* Grid info label at top of placeholder */
+.react-grid-item.react-grid-placeholder::after {
+  content: attr(data-grid-info);
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  background: rgba(102, 126, 234, 0.95);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: 0.5px;
+  z-index: 10;
+}
+
+/* Grid alignment guides */
+.alignment-guide {
+  position: absolute;
+  background: rgba(255, 193, 7, 0.5);
+  box-shadow: 0 0 10px rgba(255, 193, 7, 0.6);
+  pointer-events: none;
+  z-index: 999;
+  animation: guideFlash 0.5s ease-in-out;
+}
+
+@keyframes guideFlash {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.alignment-guide.vertical {
+  width: 2px;
+  top: 0;
+  bottom: 0;
+}
+
+.alignment-guide.horizontal {
+  height: 2px;
+  left: 0;
+  right: 0;
+}
+
+/* Snap zone indicator */
+.snap-zone {
+  position: absolute;
+  border: 2px dashed rgba(82, 196, 26, 0.6);
+  background: rgba(82, 196, 26, 0.05);
+  border-radius: 8px;
+  pointer-events: none;
+  animation: snapZonePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes snapZonePulse {
+  0%, 100% {
+    border-color: rgba(82, 196, 26, 0.6);
+    background: rgba(82, 196, 26, 0.05);
+  }
+  50% {
+    border-color: rgba(82, 196, 26, 0.9);
+    background: rgba(82, 196, 26, 0.1);
+  }
+}
+
+/* Grid ruler/scale */
+.grid-ruler {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  z-index: 100;
+}
+
+.grid-ruler.horizontal {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+.grid-ruler.vertical {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 24px;
+  border-right: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+.grid-ruler-mark {
+  position: absolute;
+  background: rgba(102, 126, 234, 0.4);
+  pointer-events: none;
+}
+
+.grid-ruler.horizontal .grid-ruler-mark {
+  width: 1px;
+  height: 8px;
+  bottom: 0;
+}
+
+.grid-ruler.vertical .grid-ruler-mark {
+  height: 1px;
+  width: 8px;
+  right: 0;
+}
+
+.grid-ruler-label {
+  position: absolute;
+  font-size: 9px;
+  color: #667eea;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+/* Widget dimension badge */
+.widget-dimension-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  padding: 5px 12px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.98) 0%, rgba(118, 75, 162, 0.98) 100%);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4),
+              0 1px 3px rgba(0, 0, 0, 0.15),
+              inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  opacity: 0;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  z-index: 10;
+  letter-spacing: 1px;
+  backdrop-filter: blur(8px);
+  transform: scale(0.85) translateY(4px);
+}
+
+.react-grid-item:hover .widget-dimension-badge,
+.react-grid-item.react-draggable-dragging .widget-dimension-badge,
+.react-grid-item.resizing .widget-dimension-badge {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Grid background pattern enhancement */
+.grid-pattern-dots {
+  background-image: radial-gradient(circle, rgba(102, 126, 234, 0.15) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.grid-pattern-squares {
+  background-image:
+    linear-gradient(rgba(102, 126, 234, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(102, 126, 234, 0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Magnetic grid snapping visual */
+.magnetic-snap-indicator {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(82, 196, 26, 0.8);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(82, 196, 26, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+  animation: magneticPulse 0.8s ease-out;
+  z-index: 1001;
+}
+
+@keyframes magneticPulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Grid cell hover highlight */
+.grid-cell-highlight {
+  position: absolute;
+  background: rgba(102, 126, 234, 0.12);
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  border-radius: 6px;
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+/* Grid cells - NO interaction to prevent interference */
+.grid-cell-interactive {
+  pointer-events: none !important;
+}
+
+/* Sticky column header enhancement */
+.grid-column-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Row number ruler styling */
+.grid-row-ruler {
+  backdrop-filter: blur(8px);
+  transition: all 0.2s;
+}
+
+.grid-row-ruler:hover {
+  background: rgba(102, 126, 234, 0.1) !important;
+  border-right-color: rgba(102, 126, 234, 0.4) !important;
+}
+
+/* Z-INDEX LAYERING SYSTEM:
+   0 = Grid overlay background
+   1 = Normal widgets (default)
+   100 = Placeholder
+   500 = Hovered widget
+   1000 = Dragging widget
+   1001 = Resize indicators & coordinate badges
+*/
+
+/* Enhanced dragging experience */
+.react-grid-item.react-draggable-dragging {
+  z-index: 1000 !important;
+  opacity: 0.95 !important;
+  filter: drop-shadow(0 12px 32px rgba(102, 126, 234, 0.35)) !important;
+  transition: none !important;
+}
+
+.react-grid-item.react-draggable-dragging::after {
+  content: '📍 X: ' attr(data-x) ' · Y: ' attr(data-y);
+  position: absolute;
+  top: -48px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 18px;
+  background: linear-gradient(135deg, rgba(82, 196, 26, 0.98) 0%, rgba(52, 168, 83, 0.98) 100%);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(82, 196, 26, 0.4),
+              0 2px 8px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: 1.2px;
+  z-index: 1001;
+  animation: coordinateBounce 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(8px);
+}
+
+@keyframes coordinateBounce {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+/* Grid alignment crosshairs when dragging */
+.layout.edit-mode-active .react-grid-item.react-draggable-dragging ~ .grid-crosshair {
+  display: block;
+}
+
+.grid-crosshair {
+  position: fixed;
+  pointer-events: none;
+  display: none;
+  z-index: 999;
+}
+
+.grid-crosshair.horizontal {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(82, 196, 26, 0.5) 20%,
+    rgba(82, 196, 26, 0.8) 50%,
+    rgba(82, 196, 26, 0.5) 80%,
+    transparent 100%);
+  box-shadow: 0 0 10px rgba(82, 196, 26, 0.6);
+}
+
+.grid-crosshair.vertical {
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(82, 196, 26, 0.5) 20%,
+    rgba(82, 196, 26, 0.8) 50%,
+    rgba(82, 196, 26, 0.5) 80%,
+    transparent 100%);
+  box-shadow: 0 0 10px rgba(82, 196, 26, 0.6);
+}
+
+/* Enhanced resize visual feedback */
+.react-grid-item.resizing::before {
+  content: '📏 ' attr(data-w) ' × ' attr(data-h);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 12px 20px;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.98) 0%, rgba(255, 152, 0, 0.98) 100%);
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 10px 28px rgba(255, 193, 7, 0.4),
+              0 4px 12px rgba(255, 152, 0, 0.3);
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: 2px;
+  z-index: 1001;
+  animation: resizePop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(8px);
+}
+
+@keyframes resizePop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Grid snap point indicators */
+.grid-snap-point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(82, 196, 26, 0.8);
+  border: 2px solid white;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.6);
+  z-index: 998;
+  animation: snapPointPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes snapPointPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 768px) {
+  .position-indicator {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+
+  .grid-coordinate {
+    font-size: 8px;
+    padding: 2px 4px;
+  }
+
+  .widget-dimension-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .grid-row-ruler {
+    width: 20px !important;
+    font-size: 7px !important;
+  }
+}

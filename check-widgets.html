@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Widget Registry Diagnostic</title>
+</head>
+<body>
+    <h1>Widget Registry Diagnostic Tool</h1>
+    <p>Open your main application, then paste this into the browser console:</p>
+    <pre style="background: #f5f5f5; padding: 20px; border-radius: 8px;">
+// Check widget registry
+console.log('=== Widget Registry Check ===');
+const registry = window.widgetRegistry;
+if (registry) {
+    console.log('✓ Widget registry exists');
+    console.log('Registered widgets:', registry.count());
+    console.log('All widget IDs:', registry.getAllIds());
+} else {
+    console.log('✗ Widget registry not found');
+}
+
+// Check localStorage
+console.log('\n=== LocalStorage Check ===');
+const widgetStorage = localStorage.getItem('widget-storage');
+const pagesStorage = localStorage.getItem('pages-storage');
+console.log('Widget storage:', widgetStorage ? JSON.parse(widgetStorage) : 'empty');
+console.log('Pages storage:', pagesStorage ? JSON.parse(pagesStorage) : 'empty');
+
+// Check current page
+console.log('\n=== Current Page Check ===');
+console.log('Current path:', window.location.pathname);
+    </pre>
+
+    <h2>Quick Fix: Add Sample Widgets via Console</h2>
+    <p>If you want to quickly test with sample widgets, paste this in the browser console:</p>
+    <pre style="background: #f5f5f5; padding: 20px; border-radius: 8px;">
+// Add sample widgets to localStorage
+const sampleWidgets = {
+    state: {
+        widgets: [],
+        pageWidgets: {
+            'test-page': [
+                {
+                    id: 'widget-' + Date.now(),
+                    type: 'chart-v2',
+                    title: 'Sample Chart',
+                    x: 0,
+                    y: 0,
+                    w: 6,
+                    h: 4,
+                    config: {},
+                    pageId: 'test-page'
+                }
+            ]
+        }
+    },
+    version: 0
+};
+
+localStorage.setItem('widget-storage', JSON.stringify(sampleWidgets));
+console.log('✓ Sample widgets added! Refresh the page.');
+    </pre>
+</body>
+</html>

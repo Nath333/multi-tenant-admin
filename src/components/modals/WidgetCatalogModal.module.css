@@ -1,0 +1,73 @@
+/* Ultra-Modern Widget Catalog Modal Design */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.headerIcon {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 22px !important;
+  box-shadow:
+    0 8px 16px rgba(102, 126, 234, 0.3),
+    0 0 0 4px rgba(102, 126, 234, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  animation: pulseIcon 2s ease-in-out infinite !important;
+  position: relative !important;
+}
+
+.headerIcon::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  opacity: 0;
+  animation: pulseRing 2s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes pulseIcon {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes pulseRing {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.2;
+    transform: scale(1.15);
+  }
+}
+
+.headerTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.headerSubtitle {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+  margin-top: 3px;
+  letter-spacing: 0.2px;
+}

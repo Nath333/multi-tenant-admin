@@ -1,0 +1,352 @@
+/**
+ * Lighting Control Widget Configuration Panel
+ * Allows users to add/edit lighting zones with data bindings
+ */
+
+import { useState, useMemo } from 'react';
+import {
+  Button,
+  Form,
+  Input,
+  Select,
+  Switch,
+  Collapse,
+  Space,
+  InputNumber,
+  Popconfirm,
+  Empty,
+  Tag,
+  Radio,
+} from 'antd';
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  BulbOutlined,
+  LinkOutlined,
+} from '@ant-design/icons';
+import type { LightingControlWidgetConfig, LightingZoneConfig } from '../../types/ConfigurableWidget.types';
+import { getDataSourcesByType } from '../../data/mockDataSources';
+import '../../base/ConfigurableWidget.css';
+
+const { Panel } = Collapse;
+
+interface LightingControlConfigPanelProps {
+  config: LightingControlWidgetConfig;
+  onChange: (newConfig: LightingControlWidgetConfig) => void;
+  onClose: () => void;
+}
+
+export default function LightingControlConfigPanel({ config, onChange, onClose }: LightingControlConfigPanelProps) {
+  const [activeKey, setActiveKey] = useState<string[]>([]);
+
+  // Ensure config has default values
+  const safeConfig: LightingControlWidgetConfig = {
+    elements: config?.elements || [],
+    showEnergyMetrics: config?.showEnergyMetrics ?? true,
+    showSchedules: config?.showSchedules ?? true,
+    showOccupancy: config?.showOccupancy ?? true,
+    layout: config?.layout || 'grid',
+  };
+
+  // Get compatible data sources (memoized for performance)
+  const compatibleDataSources = useMemo(() => [
+    ...getDataSourcesByType('device-status'),
+    ...getDataSourcesByType('realtime-sensor'),
+  ], []);
+
+  const handleAddZone = () => {
+    const newZone: LightingZoneConfig = {
+      id: `zone-${Date.now()}`,
+      name: `Zone ${safeConfig.elements.length + 1}`,
+      enabled: true,
+      displayOrder: safeConfig.elements.length,
+      type: 'lighting-zone',
+      location: '',
+      defaultBrightness: 80,
+      minBrightness: 0,
+      maxBrightness: 100,
+      supportsDimming: true,
+      supportsColor: false,
+      fixtureCount: 4,
+      powerRating: 15,
+    };
+
+    onChange({
+      ...safeConfig,
+      elements: [...safeConfig.elements, newZone],
+    });
+    setActiveKey([...activeKey, newZone.id]);
+  };
+
+  const handleDeleteZone = (zoneId: string) => {
+    onChange({
+      ...safeConfig,
+      elements: safeConfig.elements.filter(e => e.id !== zoneId),
+    });
+    setActiveKey(activeKey.filter(k => k !== zoneId));
+  };
+
+  const handleUpdateZone = (zoneId: string, updates: Partial<LightingZoneConfig>) => {
+    onChange({
+      ...safeConfig,
+      elements: safeConfig.elements.map(e =>
+        e.id === zoneId ? { ...e, ...updates } : e
+      ),
+    });
+  };
+
+  const handleUpdateGlobalSettings = (updates: Partial<LightingControlWidgetConfig>) => {
+    onChange({ ...safeConfig, ...updates });
+  };
+
+  const handleSave = () => {
+    onClose();
+  };
+
+  return (
+    <div className="widget-config-panel">
+      {/* Global Settings */}
+      <div className="config-section">
+        <div className="config-section-title">
+          <BulbOutlined className="config-section-title-icon" />
+          Global Settings
+        </div>
+        <Form layout="vertical">
+          <Form.Item label="Layout Mode">
+            <Radio.Group
+              value={safeConfig.layout}
+              onChange={(e) => handleUpdateGlobalSettings({ layout: e.target.value })}
+            >
+              <Radio value="list">List</Radio>
+              <Radio value="grid">Grid</Radio>
+              <Radio value="compact">Compact</Radio>
+            </Radio.Group>
+          </Form.Item>
+
+          <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+            <Form.Item label="Show Energy Metrics" style={{ marginBottom: 0 }}>
+              <Switch
+                checked={safeConfig.showEnergyMetrics}
+                onChange={(checked) => handleUpdateGlobalSettings({ showEnergyMetrics: checked })}
+              />
+            </Form.Item>
+
+            <Form.Item label="Show Schedules" style={{ marginBottom: 0 }}>
+              <Switch
+                checked={safeConfig.showSchedules}
+                onChange={(checked) => handleUpdateGlobalSettings({ showSchedules: checked })}
+              />
+            </Form.Item>
+
+            <Form.Item label="Show Occupancy" style={{ marginBottom: 0 }}>
+              <Switch
+                checked={safeConfig.showOccupancy}
+                onChange={(checked) => handleUpdateGlobalSettings({ showOccupancy: checked })}
+              />
+            </Form.Item>
+          </Space>
+        </Form>
+      </div>
+
+      {/* Zones Configuration */}
+      <div className="config-section">
+        <div className="config-section-title">
+          <BulbOutlined className="config-section-title-icon" />
+          Lighting Zones ({safeConfig.elements.length})
+        </div>
+
+        {safeConfig.elements.length === 0 ? (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description="No zones configured"
+            className="empty-state"
+          >
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleAddZone}>
+              Add Your First Zone
+            </Button>
+          </Empty>
+        ) : (
+          <Collapse
+            activeKey={activeKey}
+            onChange={(keys) => setActiveKey(keys as string[])}
+            style={{ marginBottom: 16 }}
+          >
+            {safeConfig.elements.map((zone) => (
+              <Panel
+                key={zone.id}
+                header={
+                  <Space>
+                    <BulbOutlined />
+                    <span style={{ fontWeight: 500 }}>{zone.name}</span>
+                    {!zone.enabled && <Tag color="red">Disabled</Tag>}
+                    {zone.dataBinding && (
+                      <Tag color="green" icon={<LinkOutlined />}>
+                        Bound
+                      </Tag>
+                    )}
+                  </Space>
+                }
+                extra={
+                  <Popconfirm
+                    title="Delete this zone?"
+                    onConfirm={(e) => {
+                      e?.stopPropagation();
+                      handleDeleteZone(zone.id);
+                    }}
+                    onCancel={(e) => e?.stopPropagation()}
+                  >
+                    <Button
+                      type="text"
+                      danger
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </Popconfirm>
+                }
+              >
+                <Form layout="vertical">
+                  <Form.Item label="Zone Name">
+                    <Input
+                      value={zone.name}
+                      onChange={(e) =>
+                        handleUpdateZone(zone.id, { name: e.target.value })
+                      }
+                      placeholder="e.g., Conference Room A"
+                    />
+                  </Form.Item>
+
+                  <Form.Item label="Location">
+                    <Input
+                      value={zone.location}
+                      onChange={(e) =>
+                        handleUpdateZone(zone.id, { location: e.target.value })
+                      }
+                      placeholder="e.g., Floor 2, West Wing"
+                    />
+                  </Form.Item>
+
+                  {/* Data Binding Section */}
+                  <div className="data-binding-section">
+                    <div className="data-binding-title">
+                      <LinkOutlined />
+                      Data Binding
+                    </div>
+                    <Form.Item label="Data Source">
+                      <Select
+                        placeholder="Select a data source"
+                        value={zone.dataBinding?.mockDataKey}
+                        onChange={(value) => {
+                          const source = compatibleDataSources.find(s => s.key === value);
+                          handleUpdateZone(zone.id, {
+                            dataBinding: {
+                              id: `binding-${Date.now()}`,
+                              name: source?.name || 'Data Source',
+                              sourceType: source?.type || 'device-status',
+                              mockDataKey: value,
+                              refreshInterval: 5000,
+                            },
+                          });
+                        }}
+                        showSearch
+                      >
+                        {compatibleDataSources.map((source) => (
+                          <Select.Option key={source.key} value={source.key}>
+                            <div>
+                              <div style={{ fontWeight: 500 }}>{source.name}</div>
+                              <div style={{ fontSize: 12, color: '#8c8c8c' }}>
+                                {source.description}
+                              </div>
+                            </div>
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
+
+                  <Form.Item label="Default Brightness (%)" style={{ marginTop: 16 }}>
+                    <InputNumber
+                      min={0}
+                      max={100}
+                      value={zone.defaultBrightness}
+                      onChange={(value) =>
+                        handleUpdateZone(zone.id, { defaultBrightness: value || 80 })
+                      }
+                      style={{ width: '100%' }}
+                    />
+                  </Form.Item>
+
+                  <Form.Item label="Fixture Count">
+                    <InputNumber
+                      min={1}
+                      max={100}
+                      value={zone.fixtureCount}
+                      onChange={(value) =>
+                        handleUpdateZone(zone.id, { fixtureCount: value || 4 })
+                      }
+                      style={{ width: '100%' }}
+                    />
+                  </Form.Item>
+
+                  <Form.Item label="Power Rating per Fixture (Watts)">
+                    <InputNumber
+                      min={1}
+                      max={500}
+                      value={zone.powerRating}
+                      onChange={(value) =>
+                        handleUpdateZone(zone.id, { powerRating: value || 15 })
+                      }
+                      style={{ width: '100%' }}
+                    />
+                  </Form.Item>
+
+                  <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                    <Form.Item label="Supports Dimming" style={{ marginBottom: 0 }}>
+                      <Switch
+                        checked={zone.supportsDimming}
+                        onChange={(checked) =>
+                          handleUpdateZone(zone.id, { supportsDimming: checked })
+                        }
+                      />
+                    </Form.Item>
+
+                    <Form.Item label="Supports Color" style={{ marginBottom: 0 }}>
+                      <Switch
+                        checked={zone.supportsColor}
+                        onChange={(checked) =>
+                          handleUpdateZone(zone.id, { supportsColor: checked })
+                        }
+                      />
+                    </Form.Item>
+
+                    <Form.Item label="Enabled" style={{ marginBottom: 0 }}>
+                      <Switch
+                        checked={zone.enabled}
+                        onChange={(checked) =>
+                          handleUpdateZone(zone.id, { enabled: checked })
+                        }
+                      />
+                    </Form.Item>
+                  </Space>
+                </Form>
+              </Panel>
+            ))}
+          </Collapse>
+        )}
+
+        <div className="add-element-button" onClick={handleAddZone}>
+          <PlusOutlined />
+          Add Zone
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="config-actions">
+        <Button onClick={onClose}>Cancel</Button>
+        <Button type="primary" onClick={handleSave}>
+          Save Configuration
+        </Button>
+      </div>
+    </div>
+  );
+}

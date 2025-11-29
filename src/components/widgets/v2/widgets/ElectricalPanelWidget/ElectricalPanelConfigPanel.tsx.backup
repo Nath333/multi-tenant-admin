@@ -1,0 +1,514 @@
+/**
+ * Electrical Panel Widget Configuration Panel
+ * Allows users to add/edit electrical panels with circuit monitoring
+ */
+
+import { useState, useMemo, useCallback } from 'react';
+import {
+  Button,
+  Form,
+  Input,
+  Select,
+  Switch,
+  Collapse,
+  Space,
+  InputNumber,
+  Popconfirm,
+  Empty,
+  Tag,
+  Radio,
+  Table,
+} from 'antd';
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  ThunderboltOutlined,
+  LinkOutlined,
+} from '@ant-design/icons';
+import type { ElectricalPanelWidgetConfig, ElectricalPanelConfig, CircuitConfig } from '../../types/ConfigurableWidget.types';
+import { getDataSourcesByType } from '../../data/mockDataSources';
+import '../../base/ConfigurableWidget.css';
+
+const { Panel } = Collapse;
+
+interface ElectricalPanelConfigPanelProps {
+  config: ElectricalPanelWidgetConfig;
+  onChange: (newConfig: ElectricalPanelWidgetConfig) => void;
+  onClose: () => void;
+}
+
+export default function ElectricalPanelConfigPanel({ config, onChange, onClose }: ElectricalPanelConfigPanelProps) {
+  const [activeKey, setActiveKey] = useState<string[]>([]);
+
+  // Ensure config has default values
+  const safeConfig: ElectricalPanelWidgetConfig = {
+    elements: config?.elements || [],
+    showPowerQuality: config?.showPowerQuality ?? true,
+    showAlerts: config?.showAlerts ?? true,
+    showEnergyMetrics: config?.showEnergyMetrics ?? true,
+    layout: config?.layout || 'multi',
+  };
+
+  // Get compatible data sources (memoized for performance)
+  const compatibleDataSources = useMemo(() => [
+    ...getDataSourcesByType('device-status'),
+    ...getDataSourcesByType('realtime-sensor'),
+  ], []);
+
+  const handleAddPanel = () => {
+    const newPanel: ElectricalPanelConfig = {
+      id: `panel-${Date.now()}`,
+      name: `Panel ${safeConfig.elements.length + 1}`,
+      enabled: true,
+      displayOrder: safeConfig.elements.length,
+      type: 'electrical-panel',
+      location: '',
+      totalCapacity: 200,
+      voltage: 240,
+      phases: 1,
+      circuits: [],
+      showPowerFactor: true,
+      showFrequency: true,
+      showHarmonics: false,
+    };
+
+    onChange({
+      ...safeConfig,
+      elements: [...safeConfig.elements, newPanel],
+    });
+    setActiveKey([...activeKey, newPanel.id]);
+  };
+
+  const handleDeletePanel = (panelId: string) => {
+    onChange({
+      ...safeConfig,
+      elements: safeConfig.elements.filter(e => e.id !== panelId),
+    });
+    setActiveKey(activeKey.filter(k => k !== panelId));
+  };
+
+  const handleUpdatePanel = (panelId: string, updates: Partial<ElectricalPanelConfig>) => {
+    onChange({
+      ...safeConfig,
+      elements: safeConfig.elements.map(e =>
+        e.id === panelId ? { ...e, ...updates } : e
+      ),
+    });
+  };
+
+  const handleAddCircuit = (panelId: string) => {
+    const panel = safeConfig.elements.find(p => p.id === panelId);
+    if (!panel) return;
+
+    const newCircuit: CircuitConfig = {
+      id: `circuit-${Date.now()}`,
+      name: `Circuit ${panel.circuits.length + 1}`,
+      breakerSize: 20,
+      voltage: panel.voltage,
+      phase: 'A',
+      enabled: true,
+      critical: false,
+    };
+
+    handleUpdatePanel(panelId, {
+      circuits: [...panel.circuits, newCircuit],
+    });
+  };
+
+  const handleDeleteCircuit = (panelId: string, circuitId: string) => {
+    const panel = safeConfig.elements.find(p => p.id === panelId);
+    if (!panel) return;
+
+    handleUpdatePanel(panelId, {
+      circuits: panel.circuits.filter(c => c.id !== circuitId),
+    });
+  };
+
+  const handleUpdateCircuit = (panelId: string, circuitId: string, updates: Partial<CircuitConfig>) => {
+    const panel = safeConfig.elements.find(p => p.id === panelId);
+    if (!panel) return;
+
+    handleUpdatePanel(panelId, {
+      circuits: panel.circuits.map(c =>
+        c.id === circuitId ? { ...c, ...updates } : c
+      ),
+    });
+  };
+
+  const handleUpdateGlobalSettings = (updates: Partial<ElectricalPanelWidgetConfig>) => {
+    onChange({ ...safeConfig, ...updates });
+  };
+
+  const handleSave = () => {
+    onClose();
+  };
+
+  // Memoized circuit columns generator for performance
+  const getCircuitColumns = useCallback((panelId: string) => [
+    {
+      title: 'Circuit Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text: string, record: CircuitConfig) => (
+        <Input
+          value={text}
+          onChange={(e) => handleUpdateCircuit(panelId, record.id, { name: e.target.value })}
+          size="small"
+        />
+      ),
+    },
+    {
+      title: 'Breaker (A)',
+      dataIndex: 'breakerSize',
+      key: 'breakerSize',
+      width: 100,
+      render: (value: number, record: CircuitConfig) => (
+        <InputNumber
+          value={value}
+          onChange={(val) => handleUpdateCircuit(panelId, record.id, { breakerSize: val || 20 })}
+          min={15}
+          max={200}
+          size="small"
+        />
+      ),
+    },
+    {
+      title: 'Phase',
+      dataIndex: 'phase',
+      key: 'phase',
+      width: 100,
+      render: (value: string, record: CircuitConfig) => (
+        <Select
+          value={value}
+          onChange={(val) => handleUpdateCircuit(panelId, record.id, { phase: val as 'A' | 'B' | 'C' | '3-phase' })}
+          size="small"
+          style={{ width: '100%' }}
+        >
+          <Select.Option value="A">A</Select.Option>
+          <Select.Option value="B">B</Select.Option>
+          <Select.Option value="C">C</Select.Option>
+          <Select.Option value="3-phase">3-Phase</Select.Option>
+        </Select>
+      ),
+    },
+    {
+      title: 'Critical',
+      dataIndex: 'critical',
+      key: 'critical',
+      width: 80,
+      render: (value: boolean, record: CircuitConfig) => (
+        <Switch
+          checked={value}
+          onChange={(checked) => handleUpdateCircuit(panelId, record.id, { critical: checked })}
+          size="small"
+        />
+      ),
+    },
+    {
+      title: 'Enabled',
+      dataIndex: 'enabled',
+      key: 'enabled',
+      width: 80,
+      render: (value: boolean, record: CircuitConfig) => (
+        <Switch
+          checked={value}
+          onChange={(checked) => handleUpdateCircuit(panelId, record.id, { enabled: checked })}
+          size="small"
+        />
+      ),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      width: 80,
+      render: (_: any, record: CircuitConfig) => (
+        <Popconfirm
+          title="Delete this circuit?"
+          onConfirm={() => handleDeleteCircuit(panelId, record.id)}
+        >
+          <Button type="text" danger size="small" icon={<DeleteOutlined />} />
+        </Popconfirm>
+      ),
+    },
+  ], [handleUpdateCircuit, handleDeleteCircuit]);
+
+  return (
+    <div className="widget-config-panel">
+      {/* Global Settings */}
+      <div className="config-section">
+        <div className="config-section-title">
+          <ThunderboltOutlined className="config-section-title-icon" />
+          Global Settings
+        </div>
+        <Form layout="vertical">
+          <Form.Item label="Layout Mode">
+            <Radio.Group
+              value={safeConfig.layout}
+              onChange={(e) => handleUpdateGlobalSettings({ layout: e.target.value })}
+            >
+              <Radio value="single">Single Panel</Radio>
+              <Radio value="multi">Multi Panel</Radio>
+            </Radio.Group>
+          </Form.Item>
+
+          <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+            <Form.Item label="Show Power Quality" style={{ marginBottom: 0 }}>
+              <Switch
+                checked={safeConfig.showPowerQuality}
+                onChange={(checked) => handleUpdateGlobalSettings({ showPowerQuality: checked })}
+              />
+            </Form.Item>
+
+            <Form.Item label="Show Alerts" style={{ marginBottom: 0 }}>
+              <Switch
+                checked={safeConfig.showAlerts}
+                onChange={(checked) => handleUpdateGlobalSettings({ showAlerts: checked })}
+              />
+            </Form.Item>
+
+            <Form.Item label="Show Energy Metrics" style={{ marginBottom: 0 }}>
+              <Switch
+                checked={safeConfig.showEnergyMetrics}
+                onChange={(checked) => handleUpdateGlobalSettings({ showEnergyMetrics: checked })}
+              />
+            </Form.Item>
+          </Space>
+        </Form>
+      </div>
+
+      {/* Panels Configuration */}
+      <div className="config-section">
+        <div className="config-section-title">
+          <ThunderboltOutlined className="config-section-title-icon" />
+          Electrical Panels ({safeConfig.elements.length})
+        </div>
+
+        {safeConfig.elements.length === 0 ? (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description="No panels configured"
+            className="empty-state"
+          >
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleAddPanel}>
+              Add Your First Panel
+            </Button>
+          </Empty>
+        ) : (
+          <Collapse
+            activeKey={activeKey}
+            onChange={(keys) => setActiveKey(keys as string[])}
+            style={{ marginBottom: 16 }}
+          >
+            {safeConfig.elements.map((panel) => (
+              <Panel
+                key={panel.id}
+                header={
+                  <Space>
+                    <ThunderboltOutlined />
+                    <span style={{ fontWeight: 500 }}>{panel.name}</span>
+                    {!panel.enabled && <Tag color="red">Disabled</Tag>}
+                    {panel.dataBinding && (
+                      <Tag color="green" icon={<LinkOutlined />}>
+                        Bound
+                      </Tag>
+                    )}
+                    <Tag color="blue">{panel.circuits.length} Circuits</Tag>
+                  </Space>
+                }
+                extra={
+                  <Popconfirm
+                    title="Delete this panel?"
+                    onConfirm={(e) => {
+                      e?.stopPropagation();
+                      handleDeletePanel(panel.id);
+                    }}
+                    onCancel={(e) => e?.stopPropagation()}
+                  >
+                    <Button
+                      type="text"
+                      danger
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </Popconfirm>
+                }
+              >
+                <Form layout="vertical">
+                  <Form.Item label="Panel Name">
+                    <Input
+                      value={panel.name}
+                      onChange={(e) =>
+                        handleUpdatePanel(panel.id, { name: e.target.value })
+                      }
+                      placeholder="e.g., Main Distribution Panel"
+                    />
+                  </Form.Item>
+
+                  <Form.Item label="Location">
+                    <Input
+                      value={panel.location}
+                      onChange={(e) =>
+                        handleUpdatePanel(panel.id, { location: e.target.value })
+                      }
+                      placeholder="e.g., Basement, North Wall"
+                    />
+                  </Form.Item>
+
+                  {/* Data Binding Section */}
+                  <div className="data-binding-section">
+                    <div className="data-binding-title">
+                      <LinkOutlined />
+                      Data Binding
+                    </div>
+                    <Form.Item label="Data Source">
+                      <Select
+                        placeholder="Select a data source"
+                        value={panel.dataBinding?.mockDataKey}
+                        onChange={(value) => {
+                          const source = compatibleDataSources.find(s => s.key === value);
+                          handleUpdatePanel(panel.id, {
+                            dataBinding: {
+                              id: `binding-${Date.now()}`,
+                              name: source?.name || 'Data Source',
+                              sourceType: source?.type || 'device-status',
+                              mockDataKey: value,
+                              refreshInterval: 5000,
+                            },
+                          });
+                        }}
+                        showSearch
+                      >
+                        {compatibleDataSources.map((source) => (
+                          <Select.Option key={source.key} value={source.key}>
+                            <div>
+                              <div style={{ fontWeight: 500 }}>{source.name}</div>
+                              <div style={{ fontSize: 12, color: '#8c8c8c' }}>
+                                {source.description}
+                              </div>
+                            </div>
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
+
+                  <Space style={{ width: '100%' }}>
+                    <Form.Item label="Total Capacity (A)" style={{ marginTop: 16 }}>
+                      <InputNumber
+                        min={100}
+                        max={1000}
+                        step={50}
+                        value={panel.totalCapacity}
+                        onChange={(value) =>
+                          handleUpdatePanel(panel.id, { totalCapacity: value || 200 })
+                        }
+                      />
+                    </Form.Item>
+
+                    <Form.Item label="Voltage (V)" style={{ marginTop: 16 }}>
+                      <InputNumber
+                        min={120}
+                        max={480}
+                        step={120}
+                        value={panel.voltage}
+                        onChange={(value) =>
+                          handleUpdatePanel(panel.id, { voltage: value || 240 })
+                        }
+                      />
+                    </Form.Item>
+
+                    <Form.Item label="Phases" style={{ marginTop: 16 }}>
+                      <Select
+                        value={panel.phases}
+                        onChange={(value) => handleUpdatePanel(panel.id, { phases: value })}
+                        style={{ width: 100 }}
+                      >
+                        <Select.Option value={1}>Single</Select.Option>
+                        <Select.Option value={3}>Three</Select.Option>
+                      </Select>
+                    </Form.Item>
+                  </Space>
+
+                  <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                    <Form.Item label="Show Power Factor" style={{ marginBottom: 0 }}>
+                      <Switch
+                        checked={panel.showPowerFactor}
+                        onChange={(checked) =>
+                          handleUpdatePanel(panel.id, { showPowerFactor: checked })
+                        }
+                      />
+                    </Form.Item>
+
+                    <Form.Item label="Show Frequency" style={{ marginBottom: 0 }}>
+                      <Switch
+                        checked={panel.showFrequency}
+                        onChange={(checked) =>
+                          handleUpdatePanel(panel.id, { showFrequency: checked })
+                        }
+                      />
+                    </Form.Item>
+
+                    <Form.Item label="Show Harmonics" style={{ marginBottom: 0 }}>
+                      <Switch
+                        checked={panel.showHarmonics}
+                        onChange={(checked) =>
+                          handleUpdatePanel(panel.id, { showHarmonics: checked })
+                        }
+                      />
+                    </Form.Item>
+
+                    <Form.Item label="Enabled" style={{ marginBottom: 0 }}>
+                      <Switch
+                        checked={panel.enabled}
+                        onChange={(checked) =>
+                          handleUpdatePanel(panel.id, { enabled: checked })
+                        }
+                      />
+                    </Form.Item>
+                  </Space>
+
+                  {/* Circuits Section */}
+                  <div style={{ marginTop: 24 }}>
+                    <div style={{ marginBottom: 12, fontWeight: 600 }}>
+                      Circuits ({panel.circuits.length})
+                    </div>
+                    <Table
+                      dataSource={panel.circuits}
+                      columns={getCircuitColumns(panel.id)}
+                      rowKey="id"
+                      pagination={false}
+                      size="small"
+                      style={{ marginBottom: 12 }}
+                    />
+                    <Button
+                      type="dashed"
+                      icon={<PlusOutlined />}
+                      onClick={() => handleAddCircuit(panel.id)}
+                      block
+                    >
+                      Add Circuit
+                    </Button>
+                  </div>
+                </Form>
+              </Panel>
+            ))}
+          </Collapse>
+        )}
+
+        <div className="add-element-button" onClick={handleAddPanel}>
+          <PlusOutlined />
+          Add Panel
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="config-actions">
+        <Button onClick={onClose}>Cancel</Button>
+        <Button type="primary" onClick={handleSave}>
+          Save Configuration
+        </Button>
+      </div>
+    </div>
+  );
+}

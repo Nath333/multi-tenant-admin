@@ -1,0 +1,154 @@
+/* Container */
+.container {
+  padding: 10px 14px;
+  background: #fafbfc;
+  min-height: 100vh;
+}
+
+/* Header Section */
+.header {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  border: 1px solid #e5e7eb;
+  position: relative;
+}
+
+.headerAccent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.headerContent {
+  flex: 1;
+  position: relative;
+}
+
+.title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a202c;
+  letter-spacing: -0.3px;
+  line-height: 1.15;
+}
+
+.description {
+  margin: 1px 0 0 0;
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.25;
+  max-width: 600px;
+}
+
+/* Button Base Styles - Using !important to override Ant Design specificity */
+.iconButton {
+  border-radius: 6px !important;
+  height: 30px !important;
+  width: 30px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid #e5e7eb !important;
+  background: #ffffff !important;
+  transition: all 0.15s !important;
+}
+
+.iconButton:hover {
+  border-color: #667eea !important;
+  color: #667eea !important;
+  background: #ffffff !important;
+}
+
+.primaryButton {
+  border-radius: 6px !important;
+  height: 30px !important;
+  padding: 0 12px !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  background: #667eea !important;
+  border: none !important;
+  transition: all 0.15s !important;
+}
+
+.emptyButton {
+  padding: 0 14px !important;
+}
+
+.primaryButton:hover {
+  background: #5568d3 !important;
+}
+
+.secondaryButton {
+  border-radius: 6px !important;
+  height: 30px !important;
+  padding: 0 10px !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  border: 1px solid #e5e7eb !important;
+  background: #ffffff !important;
+  color: #374151 !important;
+  transition: all 0.15s !important;
+}
+
+.secondaryButton:hover {
+  border-color: #667eea !important;
+  color: #667eea !important;
+  background: #ffffff !important;
+}
+
+.successButton {
+  border-radius: 6px !important;
+  height: 30px !important;
+  padding: 0 12px !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  background: #10b981 !important;
+  border: none !important;
+  transition: all 0.15s !important;
+}
+
+.successButton:hover {
+  background: #059669 !important;
+}
+
+/* Empty State */
+.emptyContainer {
+  padding: 40px 30px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px dashed #d1d5db;
+}
+
+.emptyContent {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.emptyTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 6px;
+  letter-spacing: -0.2px;
+}
+
+.emptyDescription {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 16px;
+  line-height: 1.4;
+  max-width: 400px;
+  margin: 0 auto 16px;
+}

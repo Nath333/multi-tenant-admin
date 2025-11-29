@@ -1,0 +1,171 @@
+.configurable-widget {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.configurable-widget.hovered {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.configurable-widget .config-button {
+  transition: all 0.2s;
+}
+
+.configurable-widget .config-button:hover {
+  color: #1890ff;
+  background: rgba(24, 144, 255, 0.1);
+  transform: rotate(45deg);
+}
+
+.configurable-widget .ant-card-head {
+  border-bottom: 2px solid #f0f0f0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(250, 250, 250, 0.9) 100%);
+}
+
+.configurable-widget .ant-card-head-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #262626;
+}
+
+.configurable-widget .ant-card-body {
+  position: relative;
+}
+
+/* Configuration Panel Styles */
+.widget-config-panel {
+  padding: 24px;
+}
+
+.config-section {
+  margin-bottom: 32px;
+}
+
+.config-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.config-section-title-icon {
+  color: #1890ff;
+  font-size: 16px;
+}
+
+.element-config-card {
+  margin-bottom: 16px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.element-config-card:hover {
+  border-color: #1890ff;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
+}
+
+.element-config-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #fafafa;
+  border-bottom: 1px solid #e8e8e8;
+  cursor: pointer;
+  user-select: none;
+}
+
+.element-config-header:hover {
+  background: #f5f5f5;
+}
+
+.element-config-body {
+  padding: 16px;
+}
+
+.config-actions {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 24px;
+  background: white;
+  border-top: 1px solid #e8e8e8;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+.add-element-button {
+  width: 100%;
+  height: 48px;
+  border: 2px dashed #d9d9d9;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #595959;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.add-element-button:hover {
+  border-color: #1890ff;
+  color: #1890ff;
+  background: rgba(24, 144, 255, 0.04);
+}
+
+.data-binding-section {
+  background: linear-gradient(135deg, rgba(24, 144, 255, 0.05) 0%, rgba(82, 196, 26, 0.05) 100%);
+  border: 1px solid rgba(24, 144, 255, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.data-binding-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1890ff;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  color: #8c8c8c;
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  color: #d9d9d9;
+  margin-bottom: 16px;
+}
+
+.empty-state-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #595959;
+  margin-bottom: 8px;
+}
+
+.empty-state-description {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin-bottom: 24px;
+}

@@ -1,0 +1,409 @@
+/**
+ * HVAC Control Widget Configuration Panel
+ * Allows users to add/edit HVAC units with data bindings
+ */
+
+import { useState, useMemo } from 'react';
+import {
+  Button,
+  Form,
+  Input,
+  Select,
+  Switch,
+  Collapse,
+  Space,
+  InputNumber,
+  Popconfirm,
+  Empty,
+  Tag,
+  Radio,
+  Checkbox,
+} from 'antd';
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  CloudOutlined,
+  LinkOutlined,
+} from '@ant-design/icons';
+import type { HVACControlWidgetConfig, HVACUnitConfig } from '../../types/ConfigurableWidget.types';
+import { getDataSourcesByType } from '../../data/mockDataSources';
+import '../../base/ConfigurableWidget.css';
+
+const { Panel } = Collapse;
+
+interface HVACControlConfigPanelProps {
+  config: HVACControlWidgetConfig;
+  onChange: (newConfig: HVACControlWidgetConfig) => void;
+  onClose: () => void;
+}
+
+export default function HVACControlConfigPanel({ config, onChange, onClose }: HVACControlConfigPanelProps) {
+  const [activeKey, setActiveKey] = useState<string[]>([]);
+
+  // Ensure config has default values
+  const safeConfig: HVACControlWidgetConfig = {
+    elements: config?.elements || [],
+    showAirQuality: config?.showAirQuality ?? true,
+    showEnergyUsage: config?.showEnergyUsage ?? true,
+    showSchedules: config?.showSchedules ?? true,
+    showDiagnostics: config?.showDiagnostics ?? false,
+    layout: config?.layout || 'grid',
+  };
+
+  // Get compatible data sources (memoized for performance)
+  const compatibleDataSources = useMemo(() => [
+    ...getDataSourcesByType('device-status'),
+    ...getDataSourcesByType('realtime-sensor'),
+  ], []);
+
+  const handleAddUnit = () => {
+    const newUnit: HVACUnitConfig = {
+      id: `unit-${Date.now()}`,
+      name: `HVAC Unit ${safeConfig.elements.length + 1}`,
+      enabled: true,
+      displayOrder: safeConfig.elements.length,
+      type: 'hvac-unit',
+      location: '',
+      unitType: 'split',
+      capacity: 24000,
+      defaultTemp: 22,
+      minTemp: 16,
+      maxTemp: 30,
+      supportsHeating: true,
+      supportsCooling: true,
+      supportsVentilation: true,
+      supportsHumidity: false,
+      modes: ['auto', 'cool', 'heat', 'fan'],
+      fanSpeeds: ['low', 'medium', 'high', 'auto'],
+    };
+
+    onChange({
+      ...safeConfig,
+      elements: [...safeConfig.elements, newUnit],
+    });
+    setActiveKey([...activeKey, newUnit.id]);
+  };
+
+  const handleDeleteUnit = (unitId: string) => {
+    onChange({
+      ...safeConfig,
+      elements: safeConfig.elements.filter(e => e.id !== unitId),
+    });
+    setActiveKey(activeKey.filter(k => k !== unitId));
+  };
+
+  const handleUpdateUnit = (unitId: string, updates: Partial<HVACUnitConfig>) => {
+    onChange({
+      ...safeConfig,
+      elements: safeConfig.elements.map(e =>
+        e.id === unitId ? { ...e, ...updates } : e
+      ),
+    });
+  };
+
+  const handleUpdateGlobalSettings = (updates: Partial<HVACControlWidgetConfig>) => {
+    onChange({ ...safeConfig, ...updates });
+  };
+
+  const handleSave = () => {
+    onClose();
+  };
+
+  return (
+    <div className="widget-config-panel">
+      {/* Global Settings */}
+      <div className="config-section">
+        <div className="config-section-title">
+          <CloudOutlined className="config-section-title-icon" />
+          Global Settings
+        </div>
+        <Form layout="vertical">
+          <Form.Item label="Layout Mode">
+            <Radio.Group
+              value={safeConfig.layout}
+              onChange={(e) => handleUpdateGlobalSettings({ layout: e.target.value })}
+            >
+              <Radio value="list">List</Radio>
+              <Radio value="grid">Grid</Radio>
+              <Radio value="zones">Zones</Radio>
+            </Radio.Group>
+          </Form.Item>
+
+          <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+            <Form.Item label="Show Air Quality" style={{ marginBottom: 0 }}>
+              <Switch
+                checked={safeConfig.showAirQuality}
+                onChange={(checked) => handleUpdateGlobalSettings({ showAirQuality: checked })}
+              />
+            </Form.Item>
+
+            <Form.Item label="Show Energy Usage" style={{ marginBottom: 0 }}>
+              <Switch
+                checked={safeConfig.showEnergyUsage}
+                onChange={(checked) => handleUpdateGlobalSettings({ showEnergyUsage: checked })}
+              />
+            </Form.Item>
+          </Space>
+
+          <Space style={{ width: '100%', justifyContent: 'space-between', marginTop: 8 }}>
+            <Form.Item label="Show Schedules" style={{ marginBottom: 0 }}>
+              <Switch
+                checked={safeConfig.showSchedules}
+                onChange={(checked) => handleUpdateGlobalSettings({ showSchedules: checked })}
+              />
+            </Form.Item>
+
+            <Form.Item label="Show Diagnostics" style={{ marginBottom: 0 }}>
+              <Switch
+                checked={safeConfig.showDiagnostics}
+                onChange={(checked) => handleUpdateGlobalSettings({ showDiagnostics: checked })}
+              />
+            </Form.Item>
+          </Space>
+        </Form>
+      </div>
+
+      {/* HVAC Units Configuration */}
+      <div className="config-section">
+        <div className="config-section-title">
+          <CloudOutlined className="config-section-title-icon" />
+          HVAC Units ({safeConfig.elements.length})
+        </div>
+
+        {safeConfig.elements.length === 0 ? (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description="No HVAC units configured"
+            className="empty-state"
+          >
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleAddUnit}>
+              Add Your First HVAC Unit
+            </Button>
+          </Empty>
+        ) : (
+          <Collapse
+            activeKey={activeKey}
+            onChange={(keys) => setActiveKey(keys as string[])}
+            style={{ marginBottom: 16 }}
+          >
+            {safeConfig.elements.map((unit) => (
+              <Panel
+                key={unit.id}
+                header={
+                  <Space>
+                    <CloudOutlined />
+                    <span style={{ fontWeight: 500 }}>{unit.name}</span>
+                    {!unit.enabled && <Tag color="red">Disabled</Tag>}
+                    {unit.dataBinding && (
+                      <Tag color="green" icon={<LinkOutlined />}>
+                        Bound
+                      </Tag>
+                    )}
+                  </Space>
+                }
+                extra={
+                  <Popconfirm
+                    title="Delete this unit?"
+                    onConfirm={(e) => {
+                      e?.stopPropagation();
+                      handleDeleteUnit(unit.id);
+                    }}
+                    onCancel={(e) => e?.stopPropagation()}
+                  >
+                    <Button
+                      type="text"
+                      danger
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </Popconfirm>
+                }
+              >
+                <Form layout="vertical">
+                  <Form.Item label="Unit Name">
+                    <Input
+                      value={unit.name}
+                      onChange={(e) =>
+                        handleUpdateUnit(unit.id, { name: e.target.value })
+                      }
+                      placeholder="e.g., Main Floor HVAC"
+                    />
+                  </Form.Item>
+
+                  <Form.Item label="Location">
+                    <Input
+                      value={unit.location}
+                      onChange={(e) =>
+                        handleUpdateUnit(unit.id, { location: e.target.value })
+                      }
+                      placeholder="e.g., Rooftop Unit 1"
+                    />
+                  </Form.Item>
+
+                  <Form.Item label="Unit Type">
+                    <Select
+                      value={unit.unitType}
+                      onChange={(value) => handleUpdateUnit(unit.id, { unitType: value })}
+                    >
+                      <Select.Option value="split">Split System</Select.Option>
+                      <Select.Option value="central">Central Air</Select.Option>
+                      <Select.Option value="rooftop">Rooftop Unit</Select.Option>
+                      <Select.Option value="vrf">VRF System</Select.Option>
+                    </Select>
+                  </Form.Item>
+
+                  {/* Data Binding Section */}
+                  <div className="data-binding-section">
+                    <div className="data-binding-title">
+                      <LinkOutlined />
+                      Data Binding
+                    </div>
+                    <Form.Item label="Data Source">
+                      <Select
+                        placeholder="Select a data source"
+                        value={unit.dataBinding?.mockDataKey}
+                        onChange={(value) => {
+                          const source = compatibleDataSources.find(s => s.key === value);
+                          handleUpdateUnit(unit.id, {
+                            dataBinding: {
+                              id: `binding-${Date.now()}`,
+                              name: source?.name || 'Data Source',
+                              sourceType: source?.type || 'device-status',
+                              mockDataKey: value,
+                              refreshInterval: 5000,
+                            },
+                          });
+                        }}
+                        showSearch
+                      >
+                        {compatibleDataSources.map((source) => (
+                          <Select.Option key={source.key} value={source.key}>
+                            <div>
+                              <div style={{ fontWeight: 500 }}>{source.name}</div>
+                              <div style={{ fontSize: 12, color: '#8c8c8c' }}>
+                                {source.description}
+                              </div>
+                            </div>
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </div>
+
+                  <Form.Item label="Capacity (BTU)" style={{ marginTop: 16 }}>
+                    <InputNumber
+                      min={1000}
+                      max={100000}
+                      step={1000}
+                      value={unit.capacity}
+                      onChange={(value) =>
+                        handleUpdateUnit(unit.id, { capacity: value || 24000 })
+                      }
+                      style={{ width: '100%' }}
+                    />
+                  </Form.Item>
+
+                  <Form.Item label="Default Temperature (°C)">
+                    <InputNumber
+                      min={unit.minTemp}
+                      max={unit.maxTemp}
+                      value={unit.defaultTemp}
+                      onChange={(value) =>
+                        handleUpdateUnit(unit.id, { defaultTemp: value || 22 })
+                      }
+                      style={{ width: '100%' }}
+                    />
+                  </Form.Item>
+
+                  <Space style={{ width: '100%' }}>
+                    <Form.Item label="Min Temp (°C)">
+                      <InputNumber
+                        min={10}
+                        max={25}
+                        value={unit.minTemp}
+                        onChange={(value) =>
+                          handleUpdateUnit(unit.id, { minTemp: value || 16 })
+                        }
+                      />
+                    </Form.Item>
+
+                    <Form.Item label="Max Temp (°C)">
+                      <InputNumber
+                        min={25}
+                        max={35}
+                        value={unit.maxTemp}
+                        onChange={(value) =>
+                          handleUpdateUnit(unit.id, { maxTemp: value || 30 })
+                        }
+                      />
+                    </Form.Item>
+                  </Space>
+
+                  <Form.Item label="Capabilities">
+                    <Space orientation="vertical">
+                      <Checkbox
+                        checked={unit.supportsHeating}
+                        onChange={(e) =>
+                          handleUpdateUnit(unit.id, { supportsHeating: e.target.checked })
+                        }
+                      >
+                        Supports Heating
+                      </Checkbox>
+                      <Checkbox
+                        checked={unit.supportsCooling}
+                        onChange={(e) =>
+                          handleUpdateUnit(unit.id, { supportsCooling: e.target.checked })
+                        }
+                      >
+                        Supports Cooling
+                      </Checkbox>
+                      <Checkbox
+                        checked={unit.supportsVentilation}
+                        onChange={(e) =>
+                          handleUpdateUnit(unit.id, { supportsVentilation: e.target.checked })
+                        }
+                      >
+                        Supports Ventilation
+                      </Checkbox>
+                      <Checkbox
+                        checked={unit.supportsHumidity}
+                        onChange={(e) =>
+                          handleUpdateUnit(unit.id, { supportsHumidity: e.target.checked })
+                        }
+                      >
+                        Supports Humidity Control
+                      </Checkbox>
+                    </Space>
+                  </Form.Item>
+
+                  <Form.Item label="Enabled">
+                    <Switch
+                      checked={unit.enabled}
+                      onChange={(checked) =>
+                        handleUpdateUnit(unit.id, { enabled: checked })
+                      }
+                    />
+                  </Form.Item>
+                </Form>
+              </Panel>
+            ))}
+          </Collapse>
+        )}
+
+        <div className="add-element-button" onClick={handleAddUnit}>
+          <PlusOutlined />
+          Add HVAC Unit
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="config-actions">
+        <Button onClick={onClose}>Cancel</Button>
+        <Button type="primary" onClick={handleSave}>
+          Save Configuration
+        </Button>
+      </div>
+    </div>
+  );
+}
