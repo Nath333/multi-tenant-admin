@@ -16,6 +16,27 @@ export { default as EmptyStateWithAdd } from './EmptyStateWithAdd';
 export { default as ConfigPanelLayout } from './ConfigPanelLayout';
 export { default as ElementListManager } from './ElementListManager';
 
+// Element Header Components
+export {
+  ElementHeader,
+  StatusBadges,
+  ElementHeaderWithBadges,
+  InfoTag,
+  CountTag,
+  TypeTag,
+} from './ElementHeader';
+
+// Nested Table Editor (for columns, circuits, etc.)
+export {
+  default as NestedTableEditor,
+  textColumn,
+  numberColumn,
+  switchColumn,
+  selectColumn,
+  type ColumnDefinition,
+  type NestedItem,
+} from './NestedTableEditor';
+
 // Form Field Components
 export {
   TextField,
