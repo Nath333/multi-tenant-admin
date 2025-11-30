@@ -61,7 +61,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
                 powerFactor: 0.95,
                 circuitData,
               };
-            } catch (error) {
+            } catch {
               newStates[panel.id] = {
                 totalLoad: 0,
                 voltage: panel.voltage,

@@ -55,7 +55,7 @@ function HVACControlWidget({ title, config, onConfigChange, onRemove, editMode, 
                 efficiency: data.efficiency || 0.9,
                 controlMode: data.controlMode || 'auto',
               };
-            } catch (error) {
+            } catch {
               newStates[unit.id] = {
                 mode: 'auto',
                 fanSpeed: 'auto',

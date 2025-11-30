@@ -15,7 +15,7 @@ export default function LoginPage() {
       await login(values.username, values.password);
       message.success(t('auth.loginSuccess'));
       navigate('/dashboard');
-    } catch (error) {
+    } catch {
       message.error(t('auth.loginFailed'));
     }
   };

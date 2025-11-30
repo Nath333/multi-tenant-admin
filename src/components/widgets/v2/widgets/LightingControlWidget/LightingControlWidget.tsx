@@ -52,7 +52,7 @@ function LightingControlWidget({ title, config, onConfigChange, onRemove, editMo
                 powerConsumption: data.powerConsumption || 0,
                 controlMode: data.controlMode || 'auto',
               };
-            } catch (error) {
+            } catch {
               // Fallback to defaults if data fetch fails
               newStates[zone.id] = {
                 brightness: zone.defaultBrightness,
