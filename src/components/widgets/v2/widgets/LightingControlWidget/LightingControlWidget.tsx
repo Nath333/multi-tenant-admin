@@ -13,7 +13,7 @@ import { WeeklyCalendar } from '../../shared';
 import type { LightingControlWidgetConfig, LightingZoneConfig, ConfigurableWidgetProps } from '../../types/ConfigurableWidget.types';
 import type { WeeklySchedule } from '../../shared';
 
-interface LightingControlWidgetProps extends ConfigurableWidgetProps<LightingControlWidgetConfig> {}
+type LightingControlWidgetProps = ConfigurableWidgetProps<LightingControlWidgetConfig>;
 
 interface ZoneState {
   brightness: number;

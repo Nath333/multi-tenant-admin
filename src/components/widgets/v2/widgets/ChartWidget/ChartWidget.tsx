@@ -33,7 +33,7 @@ import type { WeeklySchedule } from '../../shared';
 
 const COLORS = ['#1890ff', '#52c41a', '#faad14', '#f5222d', '#722ed1', '#13c2c2', '#eb2f96', '#fa8c16'];
 
-interface ChartWidgetProps extends ConfigurableWidgetProps<ChartWidgetConfig> {}
+type ChartWidgetProps = ConfigurableWidgetProps<ChartWidgetConfig>;
 
 function ChartWidget({ title, config, onConfigChange, onRemove, editMode, className, style }: ChartWidgetProps) {
   const [chartData, setChartData] = useState<Record<string, any>>({});

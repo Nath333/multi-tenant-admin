@@ -13,7 +13,7 @@ import { WeeklyCalendar } from '../../shared';
 import type { HVACControlWidgetConfig, HVACUnitConfig, ConfigurableWidgetProps } from '../../types/ConfigurableWidget.types';
 import type { WeeklySchedule } from '../../shared';
 
-interface HVACControlWidgetProps extends ConfigurableWidgetProps<HVACControlWidgetConfig> {}
+type HVACControlWidgetProps = ConfigurableWidgetProps<HVACControlWidgetConfig>;
 
 interface UnitState {
   mode: string;

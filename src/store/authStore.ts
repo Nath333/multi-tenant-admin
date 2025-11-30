@@ -24,6 +24,7 @@ export const useAuthStore = create<AuthState>()(
       availableTenants: [],
 
       login: async (username: string, _password: string) => {
+        void _password; // Mock auth - password not validated
         await new Promise(resolve => setTimeout(resolve, 500));
 
         const mockTenants: Tenant[] = [

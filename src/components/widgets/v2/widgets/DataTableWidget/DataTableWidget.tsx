@@ -14,7 +14,7 @@ import { WeeklyCalendar } from '../../shared';
 import type { DataTableWidgetConfig, TableElementConfig, ConfigurableWidgetProps } from '../../types/ConfigurableWidget.types';
 import type { WeeklySchedule } from '../../shared';
 
-interface DataTableWidgetProps extends ConfigurableWidgetProps<DataTableWidgetConfig> {}
+type DataTableWidgetProps = ConfigurableWidgetProps<DataTableWidgetConfig>;
 
 function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, className, style }: DataTableWidgetProps) {
   const [tableData, setTableData] = useState<Record<string, any[]>>({});

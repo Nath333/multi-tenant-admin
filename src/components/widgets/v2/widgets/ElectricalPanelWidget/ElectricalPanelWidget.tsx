@@ -13,7 +13,7 @@ import { WeeklyCalendar } from '../../shared';
 import type { ElectricalPanelWidgetConfig, ElectricalPanelConfig, ConfigurableWidgetProps } from '../../types/ConfigurableWidget.types';
 import type { WeeklySchedule } from '../../shared';
 
-interface ElectricalPanelWidgetProps extends ConfigurableWidgetProps<ElectricalPanelWidgetConfig> {}
+type ElectricalPanelWidgetProps = ConfigurableWidgetProps<ElectricalPanelWidgetConfig>;
 
 interface PanelState {
   totalLoad: number;
