@@ -1,10 +1,10 @@
 /**
- * HVAC Control Widget Configuration Panel - REFACTORED VERSION
- * Now uses reusable components for cleaner, more maintainable code
+ * HVAC Control Widget Configuration Panel - ULTRA-REFACTORED VERSION
+ * Uses reusable hooks and components for maximum code reduction.
  */
 
-import { Form, Space, Tag } from 'antd';
-import { CloudOutlined, LinkOutlined } from '@ant-design/icons';
+import { Form, Space } from 'antd';
+import { CloudOutlined } from '@ant-design/icons';
 import type { HVACControlWidgetConfig, HVACUnitConfig } from '../../types/ConfigurableWidget.types';
 
 // Import reusable components
@@ -12,6 +12,8 @@ import {
   ConfigPanelLayout,
   ConfigSection,
   ElementListManager,
+  ElementHeaderWithBadges,
+  InfoTag,
   TextField,
   NumberField,
   SwitchField,
@@ -20,6 +22,9 @@ import {
   DataBindingForm,
   type SelectOption,
 } from '../../base';
+
+// Import reusable hooks
+import { useElementManager } from '../../hooks';
 
 interface HVACControlConfigPanelProps {
   config: HVACControlWidgetConfig;
@@ -34,22 +39,28 @@ const UNIT_TYPES: SelectOption[] = [
   { label: 'VRF System', value: 'vrf' },
 ];
 
-export default function HVACControlConfigPanel({ config, onChange, onClose }: HVACControlConfigPanelProps) {
-  const safeConfig: HVACControlWidgetConfig = {
-    elements: config?.elements || [],
-    showAirQuality: config?.showAirQuality ?? true,
-    showEnergyUsage: config?.showEnergyUsage ?? true,
-    showSchedules: config?.showSchedules ?? true,
-    showDiagnostics: config?.showDiagnostics ?? false,
-    layout: config?.layout || 'grid',
-  };
+const HVAC_DEFAULTS: Partial<HVACControlWidgetConfig> = {
+  showAirQuality: true,
+  showEnergyUsage: true,
+  showSchedules: true,
+  showDiagnostics: false,
+  layout: 'grid',
+};
 
-  const handleAddUnit = () => {
-    const newUnit: HVACUnitConfig = {
+export default function HVACControlConfigPanel({ config, onChange, onClose }: HVACControlConfigPanelProps) {
+  // Use element manager hook for all CRUD operations
+  const { safeConfig, handleAdd, handleDelete, handleUpdate, handleUpdateGlobal } = useElementManager<
+    HVACControlWidgetConfig,
+    HVACUnitConfig
+  >({
+    config,
+    onChange,
+    defaults: HVAC_DEFAULTS,
+    createNewElement: (elements) => ({
       id: `unit-${Date.now()}`,
-      name: `HVAC Unit ${safeConfig.elements.length + 1}`,
+      name: `HVAC Unit ${elements.length + 1}`,
       enabled: true,
-      displayOrder: safeConfig.elements.length,
+      displayOrder: elements.length,
       type: 'hvac-unit',
       location: '',
       unitType: 'split',
@@ -63,73 +74,52 @@ export default function HVACControlConfigPanel({ config, onChange, onClose }: HV
       supportsHumidity: false,
       modes: ['auto', 'cool', 'heat', 'fan'],
       fanSpeeds: ['low', 'medium', 'high', 'auto'],
-    };
-    onChange({ ...safeConfig, elements: [...safeConfig.elements, newUnit] });
-  };
+    }),
+  });
 
-  const handleDeleteUnit = (unitId: string) => {
-    onChange({ ...safeConfig, elements: safeConfig.elements.filter(e => e.id !== unitId) });
-  };
-
-  const handleUpdateUnit = (unitId: string, updates: Partial<HVACUnitConfig>) => {
-    onChange({
-      ...safeConfig,
-      elements: safeConfig.elements.map(e => e.id === unitId ? { ...e, ...updates } : e),
-    });
-  };
-
-  const handleUpdateGlobalSettings = (updates: Partial<HVACControlWidgetConfig>) => {
-    onChange({ ...safeConfig, ...updates });
-  };
-
+  // Render header with icon and type tag
   const renderUnitHeader = (unit: HVACUnitConfig) => (
-    <>
-      <CloudOutlined />
-      <span style={{ fontWeight: 500 }}>{unit.name}</span>
-      <Tag color="blue">{unit.unitType}</Tag>
-    </>
+    <ElementHeaderWithBadges
+      element={unit}
+      icon={<CloudOutlined />}
+      extraTags={<InfoTag>{unit.unitType}</InfoTag>}
+    />
   );
 
-  const renderUnitBadges = (unit: HVACUnitConfig) => (
-    <>
-      {!unit.enabled && <Tag color="red">Disabled</Tag>}
-      {unit.dataBinding && <Tag color="green" icon={<LinkOutlined />}>Bound</Tag>}
-    </>
-  );
-
+  // Render form for each unit element
   const renderUnitForm = (unit: HVACUnitConfig) => (
     <Form layout="vertical">
       <TextField
         label="Unit Name"
         value={unit.name}
-        onChange={(name) => handleUpdateUnit(unit.id, { name })}
+        onChange={(name) => handleUpdate(unit.id, { name })}
         placeholder="e.g., Main Floor HVAC"
       />
 
       <TextField
         label="Location"
         value={unit.location}
-        onChange={(location) => handleUpdateUnit(unit.id, { location })}
+        onChange={(location) => handleUpdate(unit.id, { location })}
         placeholder="e.g., Building A, Mechanical Room"
       />
 
       <SelectField
         label="Unit Type"
         value={unit.unitType}
-        onChange={(unitType) => handleUpdateUnit(unit.id, { unitType: unitType as any })}
+        onChange={(unitType) => handleUpdate(unit.id, { unitType: unitType as HVACUnitConfig['unitType'] })}
         options={UNIT_TYPES}
       />
 
       <DataBindingForm
         value={unit.dataBinding}
-        onChange={(binding) => handleUpdateUnit(unit.id, { dataBinding: binding })}
+        onChange={(binding) => handleUpdate(unit.id, { dataBinding: binding })}
         dataSourceTypes={['device-status', 'realtime-sensor']}
       />
 
       <NumberField
         label="Capacity (BTU/h)"
         value={unit.capacity}
-        onChange={(value) => handleUpdateUnit(unit.id, { capacity: value || 24000 })}
+        onChange={(value) => handleUpdate(unit.id, { capacity: value || 24000 })}
         min={1000}
         step={1000}
       />
@@ -138,7 +128,7 @@ export default function HVACControlConfigPanel({ config, onChange, onClose }: HV
         <NumberField
           label="Default Temp"
           value={unit.defaultTemp}
-          onChange={(value) => handleUpdateUnit(unit.id, { defaultTemp: value || 22 })}
+          onChange={(value) => handleUpdate(unit.id, { defaultTemp: value || 22 })}
           min={unit.minTemp}
           max={unit.maxTemp}
           unit="°C"
@@ -146,7 +136,7 @@ export default function HVACControlConfigPanel({ config, onChange, onClose }: HV
         <NumberField
           label="Min Temp"
           value={unit.minTemp}
-          onChange={(value) => handleUpdateUnit(unit.id, { minTemp: value || 16 })}
+          onChange={(value) => handleUpdate(unit.id, { minTemp: value || 16 })}
           min={10}
           max={30}
           unit="°C"
@@ -154,7 +144,7 @@ export default function HVACControlConfigPanel({ config, onChange, onClose }: HV
         <NumberField
           label="Max Temp"
           value={unit.maxTemp}
-          onChange={(value) => handleUpdateUnit(unit.id, { maxTemp: value || 30 })}
+          onChange={(value) => handleUpdate(unit.id, { maxTemp: value || 30 })}
           min={16}
           max={35}
           unit="°C"
@@ -167,22 +157,22 @@ export default function HVACControlConfigPanel({ config, onChange, onClose }: HV
           <SwitchField
             label="Heating"
             checked={unit.supportsHeating}
-            onChange={(supportsHeating) => handleUpdateUnit(unit.id, { supportsHeating })}
+            onChange={(supportsHeating) => handleUpdate(unit.id, { supportsHeating })}
           />
           <SwitchField
             label="Cooling"
             checked={unit.supportsCooling}
-            onChange={(supportsCooling) => handleUpdateUnit(unit.id, { supportsCooling })}
+            onChange={(supportsCooling) => handleUpdate(unit.id, { supportsCooling })}
           />
           <SwitchField
             label="Ventilation"
             checked={unit.supportsVentilation}
-            onChange={(supportsVentilation) => handleUpdateUnit(unit.id, { supportsVentilation })}
+            onChange={(supportsVentilation) => handleUpdate(unit.id, { supportsVentilation })}
           />
           <SwitchField
             label="Humidity"
             checked={unit.supportsHumidity}
-            onChange={(supportsHumidity) => handleUpdateUnit(unit.id, { supportsHumidity })}
+            onChange={(supportsHumidity) => handleUpdate(unit.id, { supportsHumidity })}
           />
         </Space>
       </div>
@@ -190,7 +180,7 @@ export default function HVACControlConfigPanel({ config, onChange, onClose }: HV
       <SwitchField
         label="Enabled"
         checked={unit.enabled}
-        onChange={(enabled) => handleUpdateUnit(unit.id, { enabled })}
+        onChange={(enabled) => handleUpdate(unit.id, { enabled })}
       />
     </Form>
   );
@@ -209,22 +199,22 @@ export default function HVACControlConfigPanel({ config, onChange, onClose }: HV
             <SwitchField
               label="Show Air Quality"
               checked={safeConfig.showAirQuality}
-              onChange={(showAirQuality) => handleUpdateGlobalSettings({ showAirQuality })}
+              onChange={(showAirQuality) => handleUpdateGlobal({ showAirQuality })}
             />
             <SwitchField
               label="Show Energy Usage"
               checked={safeConfig.showEnergyUsage}
-              onChange={(showEnergyUsage) => handleUpdateGlobalSettings({ showEnergyUsage })}
+              onChange={(showEnergyUsage) => handleUpdateGlobal({ showEnergyUsage })}
             />
             <SwitchField
               label="Show Schedules"
               checked={safeConfig.showSchedules}
-              onChange={(showSchedules) => handleUpdateGlobalSettings({ showSchedules })}
+              onChange={(showSchedules) => handleUpdateGlobal({ showSchedules })}
             />
             <SwitchField
               label="Show Diagnostics"
               checked={safeConfig.showDiagnostics}
-              onChange={(showDiagnostics) => handleUpdateGlobalSettings({ showDiagnostics })}
+              onChange={(showDiagnostics) => handleUpdateGlobal({ showDiagnostics })}
             />
           </Space>
         </Form>
@@ -232,11 +222,10 @@ export default function HVACControlConfigPanel({ config, onChange, onClose }: HV
 
       <ElementListManager
         elements={safeConfig.elements}
-        onAdd={handleAddUnit}
-        onDelete={handleDeleteUnit}
+        onAdd={handleAdd}
+        onDelete={handleDelete}
         renderElement={renderUnitForm}
         renderHeader={renderUnitHeader}
-        renderHeaderBadges={renderUnitBadges}
         emptyText="No HVAC units configured"
         addButtonText="Add Unit"
         title="HVAC Units"

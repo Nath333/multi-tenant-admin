@@ -10,8 +10,6 @@ import {
   UserOutlined,
   SwapOutlined,
   BellOutlined,
-  FireOutlined,
-  BulbOutlined,
   BgColorsOutlined,
   AuditOutlined,
   DashboardOutlined,
@@ -20,7 +18,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
 import { useThemeStore } from '../store/themeStore';
-import { useFeaturesStore } from '../store/featuresStore';
 import { usePagesStore } from '../store/pagesStore';
 import { useWidgetStore } from '../store/widgetStore';
 import { useIsMobile } from '../hooks/useMediaQuery';
@@ -31,18 +28,12 @@ interface MainLayoutProps {
   children: React.ReactNode;
 }
 
-const iconMap: Record<string, React.ReactNode> = {
-  FireOutlined: <FireOutlined />,
-  BulbOutlined: <BulbOutlined />,
-};
-
 export default function MainLayout({ children }: MainLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
   const { user, currentTenant, availableTenants, logout, switchTenant } = useAuthStore();
   const { mode, toggleTheme } = useThemeStore();
-  const { getEnabledFeatures } = useFeaturesStore();
   const { pages: allPages } = usePagesStore();
   const { refreshWidgetData } = useWidgetStore();
   const isMobile = useIsMobile();
@@ -54,14 +45,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   const menuData: MenuDataItem[] = useMemo(() => {
     const baseMenu: MenuDataItem[] = [];
-
-    // Add enabled module features
-    const enabledFeatures = getEnabledFeatures();
-    const featureMenuItems: MenuDataItem[] = enabledFeatures.map((feature) => ({
-      path: feature.path,
-      name: feature.name,
-      icon: iconMap[feature.icon] || <AppstoreOutlined />,
-    }));
 
     // Add custom pages - filter enabled pages directly
     const customPages = allPages.filter(page => page.enabled).sort((a, b) => a.order - b.order);
@@ -128,8 +111,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
         : []),
     ];
 
-    return [...baseMenu, ...featureMenuItems, ...customPageMenuItems, ...saasMenu, ...systemMenu];
-  }, [t, getEnabledFeatures, allPages, user]);
+    return [...baseMenu, ...customPageMenuItems, ...saasMenu, ...systemMenu];
+  }, [t, allPages, user]);
 
   const handleLogout = useCallback(() => {
     logout();

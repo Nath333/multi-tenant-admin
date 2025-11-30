@@ -60,6 +60,7 @@ interface LayoutSelectorProps<T extends string = LayoutType> {
   options?: T[];
   disabled?: boolean;
   className?: string;
+  labels?: Record<T, string>;
 }
 
 export function LayoutSelector<T extends string = LayoutType>({
@@ -80,6 +81,7 @@ export function LayoutSelector<T extends string = LayoutType>({
     multi: 'Multi',
     zones: 'Zones',
   };
+  const layoutLabels = labels || defaultLabels;
 
   return (
     <Form.Item label={label} className={className}>

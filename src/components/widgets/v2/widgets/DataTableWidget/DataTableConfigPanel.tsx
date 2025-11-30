@@ -1,27 +1,33 @@
 /**
- * Data Table Widget Configuration Panel - REFACTORED VERSION
- * Now uses reusable components while preserving all column management functionality
- *
- * This demonstrates the reusable component library working with complex nested configs.
- * Compare this with DataTableConfigPanel.tsx.backup to see the improvement.
+ * Data Table Widget Configuration Panel - ULTRA-REFACTORED VERSION
+ * Uses reusable hooks and components including NestedTableEditor for columns.
  */
 
-import { Form, Space, Tag, Button, Table as AntTable, Switch, Input, Select, Popconfirm } from 'antd';
-import { TableOutlined, LinkOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Form, Space } from 'antd';
+import { TableOutlined } from '@ant-design/icons';
 import type { DataTableWidgetConfig, TableElementConfig, TableColumnConfig } from '../../types/ConfigurableWidget.types';
 
-// Import all reusable components
+// Import reusable components
 import {
   ConfigPanelLayout,
   ConfigSection,
   ElementListManager,
+  ElementHeaderWithBadges,
+  CountTag,
   TextField,
   NumberField,
   SwitchField,
   SelectField,
   DataBindingForm,
-  type SelectOption,
+  NestedTableEditor,
+  textColumn,
+  switchColumn,
+  selectColumn,
+  type ColumnDefinition,
 } from '../../base';
+
+// Import reusable hooks
+import { useElementManager, useNestedElementManager } from '../../hooks';
 
 interface DataTableConfigPanelProps {
   config: DataTableWidgetConfig;
@@ -29,7 +35,7 @@ interface DataTableConfigPanelProps {
   onClose: () => void;
 }
 
-const RENDER_TYPES: SelectOption[] = [
+const RENDER_TYPE_OPTIONS = [
   { label: 'Text', value: 'text' },
   { label: 'Badge', value: 'badge' },
   { label: 'Progress', value: 'progress' },
@@ -38,17 +44,28 @@ const RENDER_TYPES: SelectOption[] = [
   { label: 'Boolean', value: 'boolean' },
 ];
 
-export default function DataTableConfigPanel({ config, onChange, onClose }: DataTableConfigPanelProps) {
-  // ============================================================================
-  // Event Handlers
-  // ============================================================================
+// Column definitions for the nested table editor
+const COLUMN_DEFINITIONS: ColumnDefinition<TableColumnConfig>[] = [
+  textColumn('name', 'Name'),
+  textColumn('dataKey', 'Data Key'),
+  selectColumn('render', 'Render', RENDER_TYPE_OPTIONS),
+  switchColumn('sortable', 'Sort'),
+];
 
-  const handleAddTable = () => {
-    const newTable: TableElementConfig = {
+export default function DataTableConfigPanel({ config, onChange, onClose }: DataTableConfigPanelProps) {
+  // Use element manager hook for table CRUD operations
+  const { safeConfig, handleAdd, handleDelete, handleUpdate, handleUpdateGlobal } = useElementManager<
+    DataTableWidgetConfig,
+    TableElementConfig
+  >({
+    config,
+    onChange,
+    defaults: {},
+    createNewElement: (elements) => ({
       id: `table-${Date.now()}`,
-      name: `Table ${config.elements.length + 1}`,
+      name: `Table ${elements.length + 1}`,
       enabled: true,
-      displayOrder: config.elements.length,
+      displayOrder: elements.length,
       type: 'table',
       columns: [
         { id: 'col-1', name: 'ID', dataKey: 'id', sortable: true, filterable: false, render: 'text', width: 100 },
@@ -59,210 +76,71 @@ export default function DataTableConfigPanel({ config, onChange, onClose }: Data
       showPagination: true,
       showSearch: true,
       exportable: true,
-    };
+    }),
+  });
 
-    onChange({
-      ...config,
-      elements: [...config.elements, newTable],
-    });
-  };
-
-  const handleDeleteTable = (tableId: string) => {
-    onChange({
-      ...config,
-      elements: config.elements.filter(e => e.id !== tableId),
-    });
-  };
-
-  const handleUpdateTable = (tableId: string, updates: Partial<TableElementConfig>) => {
-    onChange({
-      ...config,
-      elements: config.elements.map(e =>
-        e.id === tableId ? { ...e, ...updates } : e
-      ),
-    });
-  };
-
-  const handleAddColumn = (tableId: string) => {
-    const table = config.elements.find(e => e.id === tableId);
-    if (!table) return;
-
-    const newColumn: TableColumnConfig = {
+  // Use nested element manager for column operations
+  const { handleAddNested, handleDeleteNested, handleUpdateNested } = useNestedElementManager<
+    DataTableWidgetConfig,
+    TableElementConfig,
+    TableColumnConfig
+  >({
+    config: safeConfig,
+    onChange,
+    nestedKey: 'columns',
+    createNewNestedElement: (table) => ({
       id: `col-${Date.now()}`,
       name: `Column ${table.columns.length + 1}`,
       dataKey: `field${table.columns.length + 1}`,
       sortable: true,
       filterable: false,
       render: 'text',
-    };
+    }),
+  });
 
-    handleUpdateTable(tableId, {
-      columns: [...table.columns, newColumn],
-    });
-  };
-
-  const handleUpdateColumn = (tableId: string, columnId: string, updates: Partial<TableColumnConfig>) => {
-    const table = config.elements.find(e => e.id === tableId);
-    if (!table) return;
-
-    handleUpdateTable(tableId, {
-      columns: table.columns.map(c =>
-        c.id === columnId ? { ...c, ...updates } : c
-      ),
-    });
-  };
-
-  const handleDeleteColumn = (tableId: string, columnId: string) => {
-    const table = config.elements.find(e => e.id === tableId);
-    if (!table) return;
-
-    handleUpdateTable(tableId, {
-      columns: table.columns.filter(c => c.id !== columnId),
-    });
-  };
-
-  // ============================================================================
-  // Render Functions
-  // ============================================================================
-
+  // Render header with icon and column count
   const renderTableHeader = (table: TableElementConfig) => (
-    <>
-      <TableOutlined />
-      <span style={{ fontWeight: 500 }}>{table.name}</span>
-      <Tag color="blue">{table.columns.length} columns</Tag>
-    </>
+    <ElementHeaderWithBadges
+      element={table}
+      icon={<TableOutlined />}
+      extraTags={<CountTag count={table.columns.length} label="columns" />}
+    />
   );
 
-  const renderTableBadges = (table: TableElementConfig) => (
-    <>
-      {!table.enabled && <Tag color="red">Disabled</Tag>}
-      {table.dataBinding && (
-        <Tag color="green" icon={<LinkOutlined />}>
-          Bound
-        </Tag>
-      )}
-    </>
-  );
-
+  // Render form for each table element
   const renderTableForm = (table: TableElementConfig) => (
     <Form layout="vertical">
-      {/* Basic Settings */}
       <TextField
         label="Table Name"
         value={table.name}
-        onChange={(name) => handleUpdateTable(table.id, { name })}
+        onChange={(name) => handleUpdate(table.id, { name })}
         placeholder="e.g., Device List"
       />
 
-      {/* Data Binding */}
       <DataBindingForm
         value={table.dataBinding}
-        onChange={(binding) => handleUpdateTable(table.id, { dataBinding: binding })}
+        onChange={(binding) => handleUpdate(table.id, { dataBinding: binding })}
         dataSourceTypes={['static-data', 'alert-stream']}
       />
 
-      {/* Columns Configuration - Keep original table UI for complexity */}
-      <div style={{ marginTop: 24 }}>
-        <div style={{ marginBottom: 12, fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span>Columns ({table.columns.length})</span>
-          <Button size="small" icon={<PlusOutlined />} onClick={() => handleAddColumn(table.id)}>
-            Add Column
-          </Button>
-        </div>
-
-        <AntTable
-          dataSource={table.columns}
-          rowKey="id"
-          pagination={false}
-          size="small"
-          columns={[
-            {
-              title: 'Name',
-              dataIndex: 'name',
-              render: (text, record) => (
-                <Input
-                  value={text}
-                  size="small"
-                  onChange={(e) =>
-                    handleUpdateColumn(table.id, record.id, { name: e.target.value })
-                  }
-                />
-              ),
-            },
-            {
-              title: 'Data Key',
-              dataIndex: 'dataKey',
-              render: (text, record) => (
-                <Input
-                  value={text}
-                  size="small"
-                  onChange={(e) =>
-                    handleUpdateColumn(table.id, record.id, { dataKey: e.target.value })
-                  }
-                />
-              ),
-            },
-            {
-              title: 'Render',
-              dataIndex: 'render',
-              render: (text, record) => (
-                <Select
-                  value={text}
-                  size="small"
-                  style={{ width: '100%' }}
-                  onChange={(value) =>
-                    handleUpdateColumn(table.id, record.id, { render: value })
-                  }
-                >
-                  {RENDER_TYPES.map(type => (
-                    <Select.Option key={type.value} value={type.value}>
-                      {type.label}
-                    </Select.Option>
-                  ))}
-                </Select>
-              ),
-            },
-            {
-              title: 'Sort',
-              dataIndex: 'sortable',
-              width: 60,
-              render: (checked, record) => (
-                <Switch
-                  size="small"
-                  checked={checked}
-                  onChange={(value) =>
-                    handleUpdateColumn(table.id, record.id, { sortable: value })
-                  }
-                />
-              ),
-            },
-            {
-              title: 'Action',
-              width: 60,
-              render: (_, record) => (
-                <Popconfirm
-                  title="Delete column?"
-                  onConfirm={() => handleDeleteColumn(table.id, record.id)}
-                >
-                  <Button
-                    type="text"
-                    danger
-                    size="small"
-                    icon={<DeleteOutlined />}
-                  />
-                </Popconfirm>
-              ),
-            },
-          ]}
-        />
-      </div>
+      {/* Columns Configuration using NestedTableEditor */}
+      <NestedTableEditor<TableColumnConfig>
+        title="Columns"
+        items={table.columns}
+        columns={COLUMN_DEFINITIONS}
+        onAdd={() => handleAddNested(table.id)}
+        onUpdate={(columnId, updates) => handleUpdateNested(table.id, columnId, updates)}
+        onDelete={(columnId) => handleDeleteNested(table.id, columnId)}
+        addButtonText="Add Column"
+        deleteConfirmText="Delete column?"
+      />
 
       {/* Table Settings */}
       <div style={{ marginTop: 16 }}>
         <NumberField
           label="Page Size"
           value={table.pageSize}
-          onChange={(pageSize) => handleUpdateTable(table.id, { pageSize: pageSize || 10 })}
+          onChange={(pageSize) => handleUpdate(table.id, { pageSize: pageSize || 10 })}
           min={5}
           max={100}
         />
@@ -271,45 +149,37 @@ export default function DataTableConfigPanel({ config, onChange, onClose }: Data
           <SwitchField
             label="Show Pagination"
             checked={table.showPagination}
-            onChange={(showPagination) => handleUpdateTable(table.id, { showPagination })}
+            onChange={(showPagination) => handleUpdate(table.id, { showPagination })}
           />
-
           <SwitchField
             label="Show Search"
             checked={table.showSearch}
-            onChange={(showSearch) => handleUpdateTable(table.id, { showSearch })}
+            onChange={(showSearch) => handleUpdate(table.id, { showSearch })}
           />
-
           <SwitchField
             label="Exportable"
             checked={table.exportable}
-            onChange={(exportable) => handleUpdateTable(table.id, { exportable })}
+            onChange={(exportable) => handleUpdate(table.id, { exportable })}
           />
-
           <SwitchField
             label="Enabled"
             checked={table.enabled}
-            onChange={(enabled) => handleUpdateTable(table.id, { enabled })}
+            onChange={(enabled) => handleUpdate(table.id, { enabled })}
           />
         </Space>
       </div>
     </Form>
   );
 
-  // ============================================================================
-  // Main Render
-  // ============================================================================
-
   return (
     <ConfigPanelLayout onCancel={onClose}>
-      {/* Global Settings Section */}
       <ConfigSection title="Global Settings" Icon={TableOutlined}>
         <Form layout="vertical">
           <SelectField
             label="Default View"
-            value={config.defaultView}
-            onChange={(defaultView) => onChange({ ...config, defaultView: defaultView as string })}
-            options={config.elements.map(table => ({
+            value={safeConfig.defaultView}
+            onChange={(defaultView) => handleUpdateGlobal({ defaultView: defaultView as string })}
+            options={safeConfig.elements.map(table => ({
               label: table.name,
               value: table.id,
             }))}
@@ -319,14 +189,12 @@ export default function DataTableConfigPanel({ config, onChange, onClose }: Data
         </Form>
       </ConfigSection>
 
-      {/* Tables Section */}
       <ElementListManager
-        elements={config.elements}
-        onAdd={handleAddTable}
-        onDelete={handleDeleteTable}
+        elements={safeConfig.elements}
+        onAdd={handleAdd}
+        onDelete={handleDelete}
         renderElement={renderTableForm}
         renderHeader={renderTableHeader}
-        renderHeaderBadges={renderTableBadges}
         emptyText="No tables configured"
         addButtonText="Add Table"
         title="Tables"
