@@ -2,7 +2,7 @@ import { useState, useCallback, type ReactNode } from 'react';
 import { message } from 'antd';
 import type { Layout } from 'react-grid-layout';
 import { useWidgetStore, type Widget } from '../../../store/widgetStore';
-import WidgetConfigModal from '../../modals/WidgetConfigModal';
+import EnhancedWidgetConfigModal from '../../modals/EnhancedWidgetConfigModal';
 import WidgetCatalogModal from '../../modals/WidgetCatalogModal';
 import WidgetPreviewDrawer from '../../drawers/WidgetPreviewDrawer';
 import KeyboardShortcutsModal from '../../modals/KeyboardShortcutsModal';
@@ -214,7 +214,7 @@ export default function WidgetLayout({
         enableDragAndDrop={editMode}
       />
 
-      <WidgetConfigModal
+      <EnhancedWidgetConfigModal
         visible={configModalVisible}
         widget={editingWidget}
         onSave={handleSaveWidgetConfig}
