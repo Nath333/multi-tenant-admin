@@ -1,23 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { Tenant, User, UserRole } from '../types';
 
-export interface Tenant {
-  id: string;
-  name: string;
-  domain: string;
-  status: 'active' | 'inactive';
-  plan: 'free' | 'pro' | 'enterprise';
-  createdAt: string;
-}
-
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  role: 'admin' | 'user' | 'superadmin' | 'page-manager';
-  tenantId: string;
-  avatar?: string;
-}
+// Re-export types for backward compatibility
+export type { Tenant, User } from '../types';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -68,7 +54,7 @@ export const useAuthStore = create<AuthState>()(
         ];
 
         // Determine role based on username
-        let role: 'admin' | 'user' | 'superadmin' | 'page-manager' = 'user';
+        let role: UserRole = 'user';
         if (username === 'admin') {
           role = 'admin';
         } else if (username === 'superadmin') {
@@ -85,6 +71,7 @@ export const useAuthStore = create<AuthState>()(
           email: `${username}@example.com`,
           role,
           tenantId: mockTenants[0].id,
+          status: 'active',
         };
 
         set({

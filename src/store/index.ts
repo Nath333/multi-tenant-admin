@@ -10,7 +10,12 @@ export { useWidgetStore } from './widgetStore';
 export { usePagesStore } from './pagesStore';
 export { useThemeStore } from './themeStore';
 export { useTenantsStore } from './tenantsStore';
+export { useUsersStore } from './usersStore';
 
-// Re-export types
-export type { Tenant } from '../services/mockData';
+// CRUD store factory for creating new entity stores
+export { createCrudStore } from './createCrudStore';
+export type { CrudStoreConfig, CrudState, ExtendedCrudState, BaseEntity } from './createCrudStore';
+
+// Re-export types from centralized location
+export type { Tenant, User, Device, UserRole } from '../types';
 export type { ThemeMode } from './themeStore';

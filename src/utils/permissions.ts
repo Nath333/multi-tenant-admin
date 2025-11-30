@@ -1,8 +1,12 @@
 /**
  * Permission utilities for role-based access control
+ * Uses centralized UserRole type from types/index.ts
  */
 
-export type UserRole = 'admin' | 'user' | 'viewer';
+import type { UserRole } from '../types';
+
+// Re-export UserRole for consumers of this module
+export type { UserRole } from '../types';
 
 export interface Permission {
   resource: string;
@@ -10,23 +14,35 @@ export interface Permission {
 }
 
 // Permission matrix - defines what each role can do
+// superadmin > admin > page-manager > user
 export const PERMISSIONS: Record<UserRole, Permission[]> = {
-  admin: [
+  superadmin: [
     { resource: 'team', actions: ['read', 'create', 'update', 'delete'] },
     { resource: 'users', actions: ['read', 'create', 'update', 'delete'] },
+    { resource: 'tenants', actions: ['read', 'create', 'update', 'delete'] },
     { resource: 'devices', actions: ['read', 'create', 'update', 'delete'] },
     { resource: 'settings', actions: ['read', 'update'] },
     { resource: 'usage', actions: ['read'] },
     { resource: 'audit-logs', actions: ['read', 'export'] },
     { resource: 'pages', actions: ['read', 'create', 'update', 'delete'] },
   ],
+  admin: [
+    { resource: 'team', actions: ['read', 'create', 'update', 'delete'] },
+    { resource: 'users', actions: ['read', 'create', 'update', 'delete'] },
+    { resource: 'tenants', actions: ['read', 'update'] },
+    { resource: 'devices', actions: ['read', 'create', 'update', 'delete'] },
+    { resource: 'settings', actions: ['read', 'update'] },
+    { resource: 'usage', actions: ['read'] },
+    { resource: 'audit-logs', actions: ['read', 'export'] },
+    { resource: 'pages', actions: ['read', 'create', 'update', 'delete'] },
+  ],
+  'page-manager': [
+    { resource: 'devices', actions: ['read'] },
+    { resource: 'usage', actions: ['read'] },
+    { resource: 'pages', actions: ['read', 'create', 'update', 'delete'] },
+  ],
   user: [
     { resource: 'devices', actions: ['read', 'update'] },
-    { resource: 'usage', actions: ['read'] },
-    { resource: 'pages', actions: ['read'] },
-  ],
-  viewer: [
-    { resource: 'devices', actions: ['read'] },
     { resource: 'usage', actions: ['read'] },
     { resource: 'pages', actions: ['read'] },
   ],
@@ -37,6 +53,10 @@ export const ADMIN_ONLY_PAGES = [
   '/users',
   '/tenants',
   '/settings',
+];
+
+// Pages that require page-manager or admin access
+export const PAGE_MANAGER_PAGES = [
   '/pages/manage',
   '/pages/edit',
   '/pages/build',
@@ -64,8 +84,8 @@ export const hasPermission = (
  * Check if user can access a specific page
  */
 export const canAccessPage = (userRole: UserRole, path: string): boolean => {
-  // Admin can access everything
-  if (userRole === 'admin') {
+  // Superadmin and admin can access everything
+  if (userRole === 'superadmin' || userRole === 'admin') {
     return true;
   }
 
@@ -78,6 +98,15 @@ export const canAccessPage = (userRole: UserRole, path: string): boolean => {
     return false;
   }
 
+  // Check if page requires page-manager access
+  const requiresPageManager = PAGE_MANAGER_PAGES.some((managerPath) =>
+    path.startsWith(managerPath)
+  );
+
+  if (requiresPageManager) {
+    return userRole === 'page-manager';
+  }
+
   return true;
 };
 
@@ -86,9 +115,10 @@ export const canAccessPage = (userRole: UserRole, path: string): boolean => {
  */
 export const getRoleLabel = (role: UserRole): string => {
   const labels: Record<UserRole, string> = {
+    superadmin: 'Super Admin',
     admin: 'Admin',
+    'page-manager': 'Page Manager',
     user: 'User',
-    viewer: 'Viewer',
   };
   return labels[role] || role;
 };
@@ -98,9 +128,24 @@ export const getRoleLabel = (role: UserRole): string => {
  */
 export const getRoleColor = (role: UserRole): string => {
   const colors: Record<UserRole, string> = {
+    superadmin: 'purple',
     admin: 'red',
+    'page-manager': 'orange',
     user: 'blue',
-    viewer: 'green',
   };
   return colors[role] || 'default';
+};
+
+/**
+ * Check if role is an admin-level role
+ */
+export const isAdminRole = (role: UserRole): boolean => {
+  return role === 'superadmin' || role === 'admin';
+};
+
+/**
+ * Check if role can manage pages
+ */
+export const canManagePages = (role: UserRole): boolean => {
+  return role === 'superadmin' || role === 'admin' || role === 'page-manager';
 };
