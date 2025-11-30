@@ -18,6 +18,7 @@ interface CachedWidgetPreviewProps {
  * Cache storage for widget preview components
  * Maps widgetId to memoized component instance
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const previewCache = new Map<string, React.ComponentType<any>>();
 
 /**

@@ -179,7 +179,7 @@ export default function UsersPage() {
       title: t('users.user'),
       dataIndex: 'name',
       key: 'name',
-      render: (_: any, record: UserWithTenant) => (
+      render: (_: unknown, record: UserWithTenant) => (
         <Space>
           <Avatar
             src={record.avatar}
@@ -201,8 +201,8 @@ export default function UsersPage() {
       dataIndex: 'role',
       key: 'role',
       filters: ROLE_FILTERS,
-      onFilter: (value: any, record: UserWithTenant) => record.role === value,
-      render: (_: any, record: UserWithTenant) => {
+      onFilter: (value: React.Key | boolean, record: UserWithTenant) => record.role === value,
+      render: (_: unknown, record: UserWithTenant) => {
         return (
           <Tag color={ROLE_COLORS[record.role]}>
             {record.role.toUpperCase()}
@@ -214,7 +214,7 @@ export default function UsersPage() {
       title: 'Contact',
       dataIndex: 'phone',
       key: 'phone',
-      render: (_: any, record: UserWithTenant) => (
+      render: (_: unknown, record: UserWithTenant) => (
         <div>
           {record.phone && (
             <Space style={{ fontSize: 12 }} size={4}>
@@ -240,8 +240,8 @@ export default function UsersPage() {
       dataIndex: 'status',
       key: 'status',
       filters: statusFilters,
-      onFilter: (value: any, record: UserWithTenant) => record.status === value,
-      render: (_: any, record: UserWithTenant) => (
+      onFilter: (value: React.Key | boolean, record: UserWithTenant) => record.status === value,
+      render: (_: unknown, record: UserWithTenant) => (
         <Tag color={record.status === 'active' ? 'success' : 'default'}>
           {record.status.toUpperCase()}
         </Tag>
@@ -252,14 +252,14 @@ export default function UsersPage() {
       dataIndex: 'lastLogin',
       key: 'lastLogin',
       sorter: (a: UserWithTenant, b: UserWithTenant) => new Date(a.lastLogin || 0).getTime() - new Date(b.lastLogin || 0).getTime(),
-      render: (_: any, record: UserWithTenant) => record.lastLogin ? new Date(record.lastLogin).toLocaleString() : '-',
+      render: (_: unknown, record: UserWithTenant) => record.lastLogin ? new Date(record.lastLogin).toLocaleString() : '-',
     },
     {
       title: t('common.actions'),
       key: 'actions',
       fixed: 'right' as const,
       width: 200,
-      render: (_: any, record: User) => (
+      render: (_: unknown, record: User) => (
         <Space>
           <Button
             type="link"
