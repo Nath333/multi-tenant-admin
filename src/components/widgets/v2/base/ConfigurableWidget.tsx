@@ -50,7 +50,7 @@ function ConfigurableWidgetBase<T>({
   useAutoResize({
     widgetId: id,
     widgetType: widgetType || 'unknown',
-    config,
+    config: config as Record<string, unknown>,
     currentSize,
     enabled: enableAutoResize && editMode,
     onResize,

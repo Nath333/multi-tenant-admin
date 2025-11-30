@@ -13,7 +13,7 @@ import { WeeklyCalendar } from '../../shared';
 import type { HVACControlWidgetConfig, HVACUnitConfig, ConfigurableWidgetProps } from '../../types/ConfigurableWidget.types';
 import type { WeeklySchedule } from '../../shared';
 
-interface HVACControlWidgetProps extends ConfigurableWidgetProps<HVACControlWidgetConfig> {}
+type HVACControlWidgetProps = ConfigurableWidgetProps<HVACControlWidgetConfig>;
 
 interface UnitState {
   mode: string;
@@ -31,6 +31,7 @@ function HVACControlWidget({ title, config, onConfigChange, onRemove, editMode, 
   const [loading, setLoading] = useState(false);
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule>({});
 
+  /* eslint-disable react-hooks/set-state-in-effect -- data fetching pattern is intentional */
   useEffect(() => {
     if (!config?.elements) return;
 
@@ -55,7 +56,7 @@ function HVACControlWidget({ title, config, onConfigChange, onRemove, editMode, 
                 efficiency: data.efficiency || 0.9,
                 controlMode: data.controlMode || 'auto',
               };
-            } catch (error) {
+            } catch {
               newStates[unit.id] = {
                 mode: 'auto',
                 fanSpeed: 'auto',
@@ -124,6 +125,7 @@ function HVACControlWidget({ title, config, onConfigChange, onRemove, editMode, 
       intervals.forEach(clearInterval);
     };
   }, [config?.elements]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleTempChange = (unitId: string, temp: number) => {
     setUnitStates(prev => ({
@@ -178,7 +180,7 @@ function HVACControlWidget({ title, config, onConfigChange, onRemove, editMode, 
               efficiency: data.efficiency || 0.9,
               controlMode: data.controlMode || 'auto',
             };
-          } catch (error) {
+          } catch {
             newStates[unit.id] = {
               temperature: 22,
               targetTemp: unit.defaultTemp,

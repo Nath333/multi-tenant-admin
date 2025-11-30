@@ -606,6 +606,7 @@ export const getDataSourcesByType = (type: DataSourceType): MockDataSource[] => 
   return ALL_DATA_SOURCES.filter(source => source.type === type);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const generateMockData = (dataBindingKey: string): any => {
   const source = getDataSourceByKey(dataBindingKey);
   return source ? source.generate() : null;

@@ -8,7 +8,7 @@ interface WidgetRendererProps {
   editMode: boolean;
   onRemove: (widgetId: string, pageId: string) => void;
   onEdit: (widget: Widget) => void;
-  onConfigChange?: (widgetId: string, newConfig: any) => void;
+  onConfigChange?: (widgetId: string, newConfig: Record<string, unknown>) => void;
   pageId: string;
 }
 
@@ -34,6 +34,7 @@ export const renderWidget = ({
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const WidgetComponent = registration.component as any;
 
   return (
@@ -47,7 +48,7 @@ export const renderWidget = ({
         widgetType={widget.type}
         editMode={editMode}
         config={widget.config || registration.defaultConfig}
-        onConfigChange={(newConfig: any) => {
+        onConfigChange={(newConfig: Record<string, unknown>) => {
           if (onConfigChange) {
             onConfigChange(widget.id, newConfig);
           }

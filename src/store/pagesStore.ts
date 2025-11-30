@@ -5,7 +5,7 @@ export interface PageWidget {
   id: string;
   type: string;
   title: string;
-  config: Record<string, any>;
+  config: Record<string, unknown>;
   layout: {
     x: number;
     y: number;
@@ -41,7 +41,7 @@ interface PagesState {
   addWidgetToPage: (pageId: string, widget: PageWidget) => void;
   updateWidgetInPage: (pageId: string, widgetId: string, updates: Partial<PageWidget>) => void;
   removeWidgetFromPage: (pageId: string, widgetId: string) => void;
-  updateWidgetLayout: (pageId: string, layout: any[]) => void;
+  updateWidgetLayout: (pageId: string, layout: Array<{ i: string; x: number; y: number; w: number; h: number }>) => void;
   getPage: (id: string) => CustomPage | undefined;
   getEnabledPages: () => CustomPage[];
 }

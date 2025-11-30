@@ -13,7 +13,7 @@ import { WeeklyCalendar } from '../../shared';
 import type { ElectricalPanelWidgetConfig, ElectricalPanelConfig, ConfigurableWidgetProps } from '../../types/ConfigurableWidget.types';
 import type { WeeklySchedule } from '../../shared';
 
-interface ElectricalPanelWidgetProps extends ConfigurableWidgetProps<ElectricalPanelWidgetConfig> {}
+type ElectricalPanelWidgetProps = ConfigurableWidgetProps<ElectricalPanelWidgetConfig>;
 
 interface PanelState {
   totalLoad: number;
@@ -23,11 +23,13 @@ interface PanelState {
   circuitData: Record<string, { current: number; voltage: number; power: number; status: string }>;
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMode, className, style }: ElectricalPanelWidgetProps) {
   const [panelStates, setPanelStates] = useState<Record<string, PanelState>>({});
   const [loading, setLoading] = useState(false);
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule>({});
 
+  /* eslint-disable react-hooks/set-state-in-effect -- data fetching pattern is intentional */
   useEffect(() => {
     if (!config?.elements) return;
 
@@ -52,7 +54,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
                 };
               });
 
-              const totalLoad = Object.values(circuitData).reduce((sum: number, c: any) => sum + c.current, 0);
+              const totalLoad = Object.values(circuitData).reduce((sum: number, c: { current: number }) => sum + c.current, 0);
 
               newStates[panel.id] = {
                 totalLoad,
@@ -61,7 +63,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
                 powerFactor: 0.95,
                 circuitData,
               };
-            } catch (error) {
+            } catch {
               newStates[panel.id] = {
                 totalLoad: 0,
                 voltage: panel.voltage,
@@ -83,7 +85,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
               };
             });
 
-            const totalLoad = Object.values(circuitData).reduce((sum: number, c: any) => sum + c.current, 0);
+            const totalLoad = Object.values(circuitData).reduce((sum: number, c: { current: number }) => sum + c.current, 0);
 
             newStates[panel.id] = {
               totalLoad,
@@ -121,7 +123,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
               };
             });
 
-            const totalLoad = Object.values(circuitData).reduce((sum: number, c: any) => sum + c.current, 0);
+            const totalLoad = Object.values(circuitData).reduce((sum: number, c: { current: number }) => sum + c.current, 0);
 
             setPanelStates(prev => ({
               ...prev,
@@ -144,6 +146,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
       intervals.forEach(clearInterval);
     };
   }, [config?.elements]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleRefresh = () => {
     if (!config?.elements) return;
@@ -173,7 +176,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
               powerFactor: data.powerFactor || 0.95,
               circuitData,
             };
-          } catch (error) {
+          } catch {
             const circuitData: Record<string, any> = {};
             panel.circuits.forEach((circuit) => {
               circuitData[circuit.id] = {
@@ -205,7 +208,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
             };
           });
 
-          const totalLoad = Object.values(circuitData).reduce((sum: number, c: any) => sum + c.current, 0);
+          const totalLoad = Object.values(circuitData).reduce((sum: number, c: { current: number }) => sum + c.current, 0);
 
           newStates[panel.id] = {
             totalLoad,
@@ -423,5 +426,6 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
     </ConfigurableWidgetBase>
   );
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default memo(ElectricalPanelWidget);

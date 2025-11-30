@@ -14,8 +14,9 @@ import { WeeklyCalendar } from '../../shared';
 import type { DataTableWidgetConfig, TableElementConfig, ConfigurableWidgetProps } from '../../types/ConfigurableWidget.types';
 import type { WeeklySchedule } from '../../shared';
 
-interface DataTableWidgetProps extends ConfigurableWidgetProps<DataTableWidgetConfig> {}
+type DataTableWidgetProps = ConfigurableWidgetProps<DataTableWidgetConfig>;
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, className, style }: DataTableWidgetProps) {
   const [tableData, setTableData] = useState<Record<string, any[]>>({});
   const [loading, setLoading] = useState(false);
@@ -23,6 +24,7 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule>({});
 
   // Fetch data for all enabled tables
+  /* eslint-disable react-hooks/set-state-in-effect -- data fetching pattern is intentional */
   useEffect(() => {
     if (!config?.elements) return;
 
@@ -74,6 +76,7 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
       intervals.forEach(clearInterval);
     };
   }, [config?.elements]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleRefresh = () => {
     if (!config?.elements) return;
@@ -117,9 +120,10 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
     URL.revokeObjectURL(url);
   };
 
+   
   const renderCellValue = (value: any, renderType: string) => {
     switch (renderType) {
-      case 'badge':
+      case 'badge': {
         const colorMap: Record<string, string> = {
           online: 'green',
           offline: 'red',
@@ -134,6 +138,7 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
           overdue: 'red',
         };
         return <Badge status="default" color={colorMap[value?.toLowerCase()] || 'default'} text={value} />;
+      }
 
       case 'progress':
         return <Progress percent={value || 0} size="small" />;
@@ -165,10 +170,12 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
         if (typeof aVal === 'string') return aVal.localeCompare(bVal);
         return aVal - bVal;
       } : undefined,
+       
       render: (value: any) => renderCellValue(value, col.render || 'text'),
     }));
   };
 
+   
   const getFilteredData = (tableId: string, data: any[]) => {
     const search = searchText[tableId]?.toLowerCase();
     if (!search) return data;
@@ -324,5 +331,6 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
     </ConfigurableWidgetBase>
   );
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default memo(DataTableWidget);

@@ -49,6 +49,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     // Add custom pages - filter enabled pages directly
     const customPages = allPages.filter(page => page.enabled).sort((a, b) => a.order - b.order);
     const customPageMenuItems: MenuDataItem[] = customPages.map((page) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const IconComponent = (Icons as any)[page.icon];
       return {
         path: page.path,

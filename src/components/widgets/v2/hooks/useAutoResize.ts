@@ -5,11 +5,14 @@
 
 import { useEffect, useRef } from 'react';
 import { calculateOptimalSize, shouldResizeWidget, type WidgetSize } from '../utils/dynamicSizing';
+import type { ChartWidgetConfig, DataTableWidgetConfig, LightingControlWidgetConfig, HVACControlWidgetConfig, ElectricalPanelWidgetConfig } from '../types/ConfigurableWidget.types';
+
+type WidgetConfig = ChartWidgetConfig | DataTableWidgetConfig | LightingControlWidgetConfig | HVACControlWidgetConfig | ElectricalPanelWidgetConfig;
 
 export interface UseAutoResizeOptions {
   widgetId?: string;
   widgetType: string;
-  config: any;
+  config: Record<string, unknown>;
   currentSize?: WidgetSize;
   enabled?: boolean;
   onResize?: (newSize: WidgetSize) => void;
@@ -23,7 +26,7 @@ export function useAutoResize({
   enabled = true,
   onResize,
 }: UseAutoResizeOptions) {
-  const previousConfigRef = useRef<any>(config);
+  const previousConfigRef = useRef<Record<string, unknown>>(config);
   const resizeTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -42,7 +45,7 @@ export function useAutoResize({
 
       // Debounce resize to avoid rapid updates
       resizeTimeoutRef.current = setTimeout(() => {
-        const optimalSize = calculateOptimalSize(widgetType, config);
+        const optimalSize = calculateOptimalSize(widgetType, config as WidgetConfig);
 
         // Only resize if the difference is significant
         if (shouldResizeWidget(currentSize, optimalSize)) {

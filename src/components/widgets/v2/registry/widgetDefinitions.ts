@@ -89,6 +89,7 @@ export const DEFAULT_DATA_TABLE_CONFIG: DataTableWidgetConfig = {
   defaultView: undefined,
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const DEFAULT_LIGHTING_CONFIG = {
   elements: [
     {
@@ -334,7 +335,7 @@ export const getAllWidgetDefinitions = (): WidgetDefinition[] => {
   return Object.values(WIDGET_DEFINITIONS);
 };
 
-export const getDefaultConfig = (type: string): any => {
+export const getDefaultConfig = (type: string): Record<string, unknown> => {
   const definition = getWidgetDefinition(type);
   return definition ? { ...definition.defaultConfig } : {};
 };

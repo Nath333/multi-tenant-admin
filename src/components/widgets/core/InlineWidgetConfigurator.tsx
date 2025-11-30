@@ -38,6 +38,7 @@ export default function InlineWidgetConfigurator({
   const [form] = Form.useForm();
   const [previewConfig, setPreviewConfig] = useState<Record<string, unknown>>({});
 
+  /* eslint-disable react-hooks/set-state-in-effect -- form state sync is intentional */
   useEffect(() => {
     if (widget && visible) {
       const initialValues = { title: widget.title, ...widget.config };
@@ -45,6 +46,7 @@ export default function InlineWidgetConfigurator({
       setPreviewConfig(initialValues);
     }
   }, [widget, form, visible]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -70,7 +72,7 @@ export default function InlineWidgetConfigurator({
     if (!registration) return <div className={styles.errorPreview}>Widget not found</div>;
 
     try {
-      const WidgetComponent = registration.component as React.ComponentType<Record<string, unknown>>;
+      const WidgetComponent = registration.component as unknown as React.ComponentType<Record<string, unknown>>;
       const { title, ...configValues } = previewConfig;
       return (
         <WidgetComponent

@@ -132,7 +132,7 @@ export default function TenantsPage() {
       dataIndex: 'name',
       key: 'name',
       sorter: (a: Tenant, b: Tenant) => a.name.localeCompare(b.name),
-      render: (_: any, record: Tenant) => (
+      render: (_: unknown, record: Tenant) => (
         <Space>
           <Avatar
             src={`https://i.pravatar.cc/150?u=${record.name}`}
@@ -158,8 +158,8 @@ export default function TenantsPage() {
         { text: 'User', value: 'pro' },
         { text: 'Viewer', value: 'enterprise' },
       ],
-      onFilter: (value: any, record: Tenant) => record.plan === value,
-      render: (_: any, record: Tenant) => {
+      onFilter: (value: React.Key | boolean, record: Tenant) => record.plan === value,
+      render: (_: unknown, record: Tenant) => {
         const role = ROLE_MAP[record.plan] || { label: record.plan, color: 'default' };
         return (
           <Tag color={role.color}>
@@ -177,8 +177,8 @@ export default function TenantsPage() {
         { text: t('common.inactive'), value: 'inactive' },
         { text: 'Suspended', value: 'suspended' },
       ],
-      onFilter: (value: any, record: Tenant) => record.status === value,
-      render: (_: any, record: Tenant) => (
+      onFilter: (value: React.Key | boolean, record: Tenant) => record.status === value,
+      render: (_: unknown, record: Tenant) => (
         <Tag color={STATUS_COLORS[record.status]}>
           {record.status.toUpperCase()}
         </Tag>
@@ -188,7 +188,7 @@ export default function TenantsPage() {
       title: 'Department',
       dataIndex: 'dataUsage',
       key: 'dataUsage',
-      render: (_: any, record: Tenant) => (
+      render: (_: unknown, record: Tenant) => (
         <span>{record.dataUsage || 'Engineering'}</span>
       ),
     },
@@ -197,14 +197,14 @@ export default function TenantsPage() {
       dataIndex: 'createdAt',
       key: 'createdAt',
       sorter: (a: Tenant, b: Tenant) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      render: (_: any, record: Tenant) => new Date(record.createdAt).toLocaleDateString(),
+      render: (_: unknown, record: Tenant) => new Date(record.createdAt).toLocaleDateString(),
     },
     {
       title: t('common.actions'),
       key: 'actions',
       fixed: 'right' as const,
       width: 180,
-      render: (_: any, record: Tenant) => (
+      render: (_: unknown, record: Tenant) => (
         <Space>
           <Button
             type="link"
@@ -226,7 +226,7 @@ export default function TenantsPage() {
         </Space>
       ),
     },
-  ], [t]);
+  ], [t, handleDeleteTenant, openEditModal]);
 
   return (
     <div style={PAGE_CONTAINER_STYLE}>

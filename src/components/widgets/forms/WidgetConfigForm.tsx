@@ -10,7 +10,7 @@ const { Text } = Typography;
 
 interface WidgetConfigFormProps {
   widgetType: string;
-  config?: any;
+  config?: Record<string, unknown>;
 }
 
 type ConfigFormComponent = () => ReactElement;
@@ -58,7 +58,7 @@ export default function WidgetConfigForm({ widgetType }: WidgetConfigFormProps) 
 interface FormFieldProps {
   label: string;
   name: string[];
-  initialValue?: any;
+  initialValue?: unknown;
   placeholder?: string;
 }
 

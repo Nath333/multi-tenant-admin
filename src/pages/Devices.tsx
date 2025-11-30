@@ -42,6 +42,7 @@ export default function DevicesPage() {
   const { currentTenant } = useAuthStore();
 
   // Get tenant-specific devices
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- intentional dependency on currentTenant?.id
   const tenantDevices = useMemo(() => {
     return currentTenant?.id ? getDevicesByTenant(currentTenant.id) : [];
   }, [currentTenant?.id]);

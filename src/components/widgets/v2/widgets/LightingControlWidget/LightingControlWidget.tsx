@@ -13,7 +13,7 @@ import { WeeklyCalendar } from '../../shared';
 import type { LightingControlWidgetConfig, LightingZoneConfig, ConfigurableWidgetProps } from '../../types/ConfigurableWidget.types';
 import type { WeeklySchedule } from '../../shared';
 
-interface LightingControlWidgetProps extends ConfigurableWidgetProps<LightingControlWidgetConfig> {}
+type LightingControlWidgetProps = ConfigurableWidgetProps<LightingControlWidgetConfig>;
 
 interface ZoneState {
   brightness: number;
@@ -29,6 +29,7 @@ function LightingControlWidget({ title, config, onConfigChange, onRemove, editMo
   const [loading, setLoading] = useState(false);
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule>({});
 
+  /* eslint-disable react-hooks/set-state-in-effect -- data fetching pattern is intentional */
   useEffect(() => {
     if (!config?.elements) return;
 
@@ -52,7 +53,7 @@ function LightingControlWidget({ title, config, onConfigChange, onRemove, editMo
                 powerConsumption: data.powerConsumption || 0,
                 controlMode: data.controlMode || 'auto',
               };
-            } catch (error) {
+            } catch {
               // Fallback to defaults if data fetch fails
               newStates[zone.id] = {
                 brightness: zone.defaultBrightness,
@@ -116,6 +117,7 @@ function LightingControlWidget({ title, config, onConfigChange, onRemove, editMo
       intervals.forEach(clearInterval);
     };
   }, [config?.elements]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleBrightnessChange = (zoneId: string, brightness: number) => {
     const zone = config?.elements?.find(z => z.id === zoneId);
@@ -173,7 +175,7 @@ function LightingControlWidget({ title, config, onConfigChange, onRemove, editMo
               powerConsumption: data.powerConsumption || 0,
               controlMode: data.controlMode || 'auto',
             };
-          } catch (error) {
+          } catch {
             newStates[zone.id] = {
               brightness: zone.defaultBrightness,
               powerState: true,

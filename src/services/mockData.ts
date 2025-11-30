@@ -365,8 +365,8 @@ export const mockUsers: User[] = [
 // Simple cache using Map
 const devicesByTenantCache = new Map<string, Device[]>();
 const usersByTenantCache = new Map<string, User[]>();
-const chartDataCache = new Map<string, any[]>();
-const widgetMockDataCache = new Map<string, any>();
+const chartDataCache = new Map<string, Array<{ date: string; devices: number; alerts: number; dataUsage: number }>>();
+const widgetMockDataCache = new Map<string, unknown>();
 
 // Helper functions to get tenant-specific data with caching
 export const getDevicesByTenant = (tenantId: string): Device[] => {
@@ -479,7 +479,7 @@ export const getDashboardStats = (tenantId?: string) => {
   const activeUsers = tenantUsers.filter(u => u.status === 'active').length;
 
   // Different stats based on tenant
-  const statsMap: Record<string, any> = {
+  const statsMap: Record<string, Record<string, { value: number | string; trend: number; comparedToLastMonth: string }>> = {
     'tenant1': {
       totalDevices: { value: tenantDevices.length, trend: 12.5, comparedToLastMonth: `+2 devices` },
       activeUsers: { value: activeUsers, trend: 8.2, comparedToLastMonth: `+1 users` },
