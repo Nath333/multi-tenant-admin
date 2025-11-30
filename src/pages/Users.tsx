@@ -251,8 +251,8 @@ export default function UsersPage() {
       title: t('users.lastLogin'),
       dataIndex: 'lastLogin',
       key: 'lastLogin',
-      sorter: (a: UserWithTenant, b: UserWithTenant) => new Date(a.lastLogin).getTime() - new Date(b.lastLogin).getTime(),
-      render: (_: any, record: UserWithTenant) => new Date(record.lastLogin).toLocaleString(),
+      sorter: (a: UserWithTenant, b: UserWithTenant) => new Date(a.lastLogin || 0).getTime() - new Date(b.lastLogin || 0).getTime(),
+      render: (_: any, record: UserWithTenant) => record.lastLogin ? new Date(record.lastLogin).toLocaleString() : '-',
     },
     {
       title: t('common.actions'),
