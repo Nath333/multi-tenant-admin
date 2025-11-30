@@ -1,0 +1,181 @@
+/* InlineWidgetConfigurator - Clean configuration overlay */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  display: flex;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  max-width: 1000px;
+  width: 100%;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+/* Preview Panel */
+.previewPanel {
+  flex: 1;
+  min-width: 350px;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+  border-right: 1px solid #e0e0e0;
+}
+
+.previewHeader {
+  padding: 14px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.previewContent {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.widgetWrapper {
+  width: 100%;
+  max-width: 450px;
+}
+
+/* Config Panel */
+.configPanel {
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+}
+
+.configHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerIcon {
+  font-size: 20px;
+  color: #1890ff;
+}
+
+.headerTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.headerSubtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #999;
+}
+
+.configBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+.configFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Form Styles */
+.formSection {
+  padding: 4px 0;
+}
+
+.labelStyle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+}
+
+.toggleSection {
+  display: flex;
+  gap: 20px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.toggleItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #555;
+}
+
+.tabLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.themeOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.errorPreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  background: #fff5f5;
+  border: 1px dashed #ffa39e;
+  border-radius: 8px;
+  color: #ff4d4f;
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  .previewPanel {
+    min-width: 100%;
+    max-height: 35vh;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .configPanel {
+    width: 100%;
+  }
+}

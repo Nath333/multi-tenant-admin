@@ -50,30 +50,39 @@ export function ColorPickerField({
 // LayoutSelector Component
 // ============================================================================
 
-interface LayoutSelectorProps {
+// Standard layout options type
+type StandardLayoutOption = 'grid' | 'tabs' | 'carousel' | 'list' | 'compact';
+
+interface LayoutSelectorProps<T extends string = StandardLayoutOption> {
   label?: string;
-  value: 'grid' | 'tabs' | 'carousel' | 'list' | 'compact';
-  onChange: (layout: 'grid' | 'tabs' | 'carousel' | 'list' | 'compact') => void;
-  options?: Array<'grid' | 'tabs' | 'carousel' | 'list' | 'compact'>;
+  value: T;
+  onChange: (layout: T) => void;
+  options?: T[];
   disabled?: boolean;
   className?: string;
+  labels?: Record<T, string>;
 }
 
-export function LayoutSelector({
+export function LayoutSelector<T extends string = StandardLayoutOption>({
   label = 'Layout Mode',
   value,
   onChange,
-  options = ['grid', 'tabs', 'carousel'],
+  options = ['grid', 'tabs', 'carousel'] as T[],
   disabled = false,
   className,
-}: LayoutSelectorProps) {
-  const layoutLabels: Record<string, string> = {
+  labels,
+}: LayoutSelectorProps<T>) {
+  const defaultLabels: Record<string, string> = {
     grid: 'Grid',
     tabs: 'Tabs',
     carousel: 'Carousel',
     list: 'List',
     compact: 'Compact',
+    single: 'Single',
+    multi: 'Multi',
+    zones: 'Zones',
   };
+  const layoutLabels = labels || defaultLabels;
 
   return (
     <Form.Item label={label} className={className}>

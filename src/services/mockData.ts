@@ -1,48 +1,9 @@
 // Professional mock data service for the IoT admin platform
 import { getDefaultConfig } from '../components/widgets/v2/registry/widgetDefinitions';
+import type { Device, Tenant, User } from '../types';
 
-export interface Device {
-  id: string;
-  name: string;
-  type: 'sensor' | 'gateway' | 'actuator' | 'camera';
-  status: 'online' | 'offline' | 'warning';
-  location: string;
-  lastSeen: string;
-  battery: number;
-  firmware: string;
-  model: string;
-  serialNumber: string;
-  temperature?: number;
-  humidity?: number;
-  signal: number;
-  tenantId: string;
-}
-
-export interface Tenant {
-  id: string;
-  name: string;
-  domain: string;
-  status: 'active' | 'inactive' | 'suspended';
-  plan: 'free' | 'pro' | 'enterprise';
-  createdAt: string;
-  devices: number;
-  users: number;
-  dataUsage: string;
-  logo?: string;
-}
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'user' | 'superadmin' | 'page-manager';
-  status: 'active' | 'inactive';
-  lastLogin: string;
-  tenantId: string;
-  avatar?: string;
-  phone?: string;
-  department?: string;
-}
+// Re-export types for backward compatibility
+export type { Device, Tenant, User } from '../types';
 
 // Generate realistic device data with tenant-specific assignments
 export const mockDevices: Device[] = [
@@ -302,6 +263,7 @@ export const mockTenants: Tenant[] = [
 export const mockUsers: User[] = [
   {
     id: 'user-001',
+    username: 'john.anderson',
     name: 'John Anderson',
     email: 'john.anderson@acme.com',
     role: 'admin',
@@ -313,6 +275,7 @@ export const mockUsers: User[] = [
   },
   {
     id: 'user-002',
+    username: 'sarah.chen',
     name: 'Sarah Chen',
     email: 'sarah.chen@acme.com',
     role: 'user',
@@ -324,6 +287,7 @@ export const mockUsers: User[] = [
   },
   {
     id: 'user-003',
+    username: 'michael.torres',
     name: 'Michael Torres',
     email: 'michael.torres@techvision.com',
     role: 'admin',
@@ -335,6 +299,7 @@ export const mockUsers: User[] = [
   },
   {
     id: 'user-004',
+    username: 'emily.watson',
     name: 'Emily Watson',
     email: 'emily.watson@smarthome.com',
     role: 'user',
@@ -346,6 +311,7 @@ export const mockUsers: User[] = [
   },
   {
     id: 'user-005',
+    username: 'david.kim',
     name: 'David Kim',
     email: 'david.kim@greenenergy.com',
     role: 'admin',
@@ -357,6 +323,7 @@ export const mockUsers: User[] = [
   },
   {
     id: 'user-006',
+    username: 'lisa.rodriguez',
     name: 'Lisa Rodriguez',
     email: 'lisa.rodriguez@acme.com',
     role: 'user',
@@ -368,6 +335,7 @@ export const mockUsers: User[] = [
   },
   {
     id: 'user-007',
+    username: 'alex.johnson',
     name: 'Alex Johnson',
     email: 'alex.johnson@acme.com',
     role: 'page-manager',
@@ -379,6 +347,7 @@ export const mockUsers: User[] = [
   },
   {
     id: 'user-008',
+    username: 'maria.garcia',
     name: 'Maria Garcia',
     email: 'maria.garcia@techvision.com',
     role: 'page-manager',
