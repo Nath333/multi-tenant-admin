@@ -178,7 +178,7 @@ function HVACControlWidget({ title, config, onConfigChange, onRemove, editMode, 
               efficiency: data.efficiency || 0.9,
               controlMode: data.controlMode || 'auto',
             };
-          } catch (error) {
+          } catch {
             newStates[unit.id] = {
               temperature: 22,
               targetTemp: unit.defaultTemp,

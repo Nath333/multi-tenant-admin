@@ -173,7 +173,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
               powerFactor: data.powerFactor || 0.95,
               circuitData,
             };
-          } catch (error) {
+          } catch {
             const circuitData: Record<string, any> = {};
             panel.circuits.forEach((circuit) => {
               circuitData[circuit.id] = {

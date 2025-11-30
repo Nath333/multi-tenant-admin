@@ -173,7 +173,7 @@ function LightingControlWidget({ title, config, onConfigChange, onRemove, editMo
               powerConsumption: data.powerConsumption || 0,
               controlMode: data.controlMode || 'auto',
             };
-          } catch (error) {
+          } catch {
             newStates[zone.id] = {
               brightness: zone.defaultBrightness,
               powerState: true,
