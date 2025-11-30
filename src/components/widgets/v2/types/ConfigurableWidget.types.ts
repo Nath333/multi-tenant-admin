@@ -202,7 +202,7 @@ export interface WidgetSize {
   h: number;  // height in grid units
 }
 
-export interface ConfigurableWidgetProps<T = any> {
+export interface ConfigurableWidgetProps<T = unknown> {
   id?: string;
   title: string;
   config: T;
@@ -228,7 +228,7 @@ export interface WidgetDefinition {
   name: string;
   description: string;
   icon: string;
-  defaultConfig: any;
+  defaultConfig: Record<string, unknown>;
   minSize: { w: number; h: number };
   defaultSize: { w: number; h: number };
   maxSize: { w: number; h: number };
@@ -244,7 +244,7 @@ export interface ConfigPanelTab {
   icon?: React.ReactNode;
 }
 
-export interface ConfigPanelProps<T = any> {
+export interface ConfigPanelProps<T = unknown> {
   config: T;
   onChange: (newConfig: T) => void;
   onClose: () => void;
@@ -260,5 +260,6 @@ export interface MockDataSource {
   name: string;
   description: string;
   type: DataSourceType;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   generate: () => any;
 }

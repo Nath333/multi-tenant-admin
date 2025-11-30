@@ -204,7 +204,7 @@ export function calculateElectricalPanelWidgetSize(config: ElectricalPanelWidget
 
 export function calculateOptimalSize(
   widgetType: string,
-  config: any
+  config: ChartWidgetConfig | DataTableWidgetConfig | LightingControlWidgetConfig | HVACControlWidgetConfig | ElectricalPanelWidgetConfig
 ): WidgetSize {
   switch (widgetType) {
     case 'chart-v2':
