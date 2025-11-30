@@ -16,6 +16,7 @@ import { V2_WIDGET_METADATA, getDefaultConfig } from './widgetDefinitions';
  * V2 Widget Registrations
  * All 5 smart, configurable widgets
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const v2WidgetRegistrations: WidgetRegistration[] = [
   // Chart Widget V2
   {
@@ -57,6 +58,7 @@ const v2WidgetRegistrations: WidgetRegistration[] = [
     configSchema: {},
   },
 ];
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 // Register all V2 widgets
 export function registerV2Widgets() {

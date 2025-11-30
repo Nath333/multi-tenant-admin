@@ -181,7 +181,7 @@ export async function request<T>(
   };
 
   const retryRequest = async (): Promise<T> => {
-    let lastError: any;
+    let lastError: unknown;
     for (let i = 0; i <= maxRetries; i++) {
       try {
         return await makeRequest();

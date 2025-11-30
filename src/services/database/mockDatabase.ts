@@ -18,8 +18,8 @@ export interface Tenant {
   stripe_customer_id?: string;
   created_at: Date;
   updated_at: Date;
-  settings: Record<string, any>; // JSONB
-  metadata: Record<string, any>; // JSONB
+  settings: Record<string, unknown>; // JSONB
+  metadata: Record<string, unknown>; // JSONB
 }
 
 export interface User {
@@ -35,7 +35,7 @@ export interface User {
   last_login_ip?: string;
   created_at: Date;
   updated_at: Date;
-  metadata: Record<string, any>; // JSONB
+  metadata: Record<string, unknown>; // JSONB
 }
 
 export interface Device {
@@ -52,7 +52,7 @@ export interface Device {
   mac_address?: string;
   created_at: Date;
   updated_at: Date;
-  attributes: Record<string, any>; // JSONB - flexible metadata
+  attributes: Record<string, unknown>; // JSONB - flexible metadata
 }
 
 export interface Dashboard {
@@ -79,7 +79,7 @@ export interface Widget {
   width: number;
   height: number;
   is_enabled: boolean;
-  config: Record<string, any>; // JSONB - widget-specific config
+  config: Record<string, unknown>; // JSONB - widget-specific config
   created_at: Date;
   updated_at: Date;
 }
@@ -94,7 +94,7 @@ export interface AuditLog {
   ip_address: string;
   user_agent?: string;
   status: 'success' | 'failure';
-  details: Record<string, any>; // JSONB
+  details: Record<string, unknown>; // JSONB
   created_at: Date;
 }
 
@@ -156,7 +156,7 @@ export interface Permission {
   role: string;
   resource: string;
   actions: string[]; // ['create', 'read', 'update', 'delete']
-  conditions?: Record<string, any>; // JSONB
+  conditions?: Record<string, unknown>; // JSONB
 }
 
 // Dexie Database Class
