@@ -214,10 +214,10 @@ export default function ElectricalPanelConfigPanel({ config, onChange, onClose }
     <ConfigPanelLayout onCancel={onClose}>
       <ConfigSection title="Global Settings" Icon={ThunderboltOutlined}>
         <Form layout="vertical">
-          <LayoutSelector
+          <LayoutSelector<'single' | 'multi'>
             value={safeConfig.layout}
-            onChange={(layout) => handleUpdateGlobal({ layout: layout as 'single' | 'multi' })}
-            options={['list', 'grid']}
+            onChange={(layout) => handleUpdateGlobalSettings({ layout })}
+            options={['single', 'multi']}
           />
 
           <Space style={{ width: '100%', justifyContent: 'space-between', marginTop: 16 }}>

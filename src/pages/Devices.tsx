@@ -1,10 +1,12 @@
 import { ProTable } from '@ant-design/pro-components';
 import { Tag, Badge, Progress, Button, Space, Tooltip } from 'antd';
+import type { PresetStatusColorType } from 'antd/es/_util/colors';
 import { PlusOutlined, ReloadOutlined, SignalFilled, AppstoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { getDevicesByTenant } from '../services/mockData';
 import { useAuthStore } from '../store/authStore';
 import { useMemo } from 'react';
+import type { Device } from '../types';
 import {
   PAGE_CONTAINER_STYLE,
   PRIMARY_BUTTON_STYLE,
@@ -29,7 +31,7 @@ const DEVICE_TYPE_COLORS: Record<string, string> = {
   camera: 'orange',
 } as const;
 
-const STATUS_CONFIG: Record<string, { color: string }> = {
+const STATUS_CONFIG: Record<string, { color: PresetStatusColorType }> = {
   online: { color: 'success' },
   offline: { color: 'default' },
   warning: { color: 'warning' },
@@ -63,7 +65,7 @@ export default function DevicesPage() {
       dataIndex: 'name',
       key: 'name',
       sorter: true,
-      render: (_dom: any, record: any) => (
+      render: (_: unknown, record: Device) => (
         <div>
           <div style={{ fontWeight: 500 }}>{record.name}</div>
           <div style={{ fontSize: 12, color: '#999' }}>
@@ -77,8 +79,8 @@ export default function DevicesPage() {
       dataIndex: 'type',
       key: 'type',
       filters: deviceTypeFilters,
-      onFilter: (value: any, record: any) => record.type === value,
-      render: (_dom: any, record: any) => {
+      onFilter: (value: React.Key | boolean, record: Device) => record.type === value,
+      render: (_: unknown, record: Device) => {
         return <Tag color={DEVICE_TYPE_COLORS[record.type]}>{t(`devices.${record.type}`)}</Tag>;
       },
     },
@@ -87,10 +89,10 @@ export default function DevicesPage() {
       dataIndex: 'status',
       key: 'status',
       filters: statusFilters,
-      onFilter: (value: any, record: any) => record.status === value,
-      render: (_dom: any, record: any) => {
+      onFilter: (value: React.Key | boolean, record: Device) => record.status === value,
+      render: (_: unknown, record: Device) => {
         return (
-          <Badge status={STATUS_CONFIG[record.status].color as any} text={t(`common.${record.status}`)} />
+          <Badge status={STATUS_CONFIG[record.status].color} text={t(`common.${record.status}`)} />
         );
       },
     },
@@ -104,14 +106,14 @@ export default function DevicesPage() {
       title: 'Signal',
       dataIndex: 'signal',
       key: 'signal',
-      sorter: (a: any, b: any) => a.signal - b.signal,
-      render: (_dom: any, record: any) => (
+      sorter: (a: Device, b: Device) => (a.signal ?? 0) - (b.signal ?? 0),
+      render: (_: unknown, record: Device) => (
         <Tooltip title={`Signal strength: ${record.signal}%`}>
           <Space>
             <SignalFilled
               style={{
                 color:
-                  record.signal >= 80 ? '#52c41a' : record.signal >= 50 ? '#faad14' : '#ff4d4f',
+                  (record.signal ?? 0) >= 80 ? '#52c41a' : (record.signal ?? 0) >= 50 ? '#faad14' : '#ff4d4f',
               }}
             />
             <span>{record.signal}%</span>
@@ -123,17 +125,17 @@ export default function DevicesPage() {
       title: t('devices.battery'),
       dataIndex: 'battery',
       key: 'battery',
-      sorter: (a: any, b: any) => a.battery - b.battery,
-      render: (_dom: any, record: any) => (
+      sorter: (a: Device, b: Device) => (a.battery ?? 0) - (b.battery ?? 0),
+      render: (_: unknown, record: Device) => (
         <div style={{ width: 100 }}>
           <Progress
             percent={record.battery}
             size="small"
-            status={record.battery < 30 ? 'exception' : record.battery < 60 ? 'normal' : 'success'}
+            status={(record.battery ?? 0) < 30 ? 'exception' : (record.battery ?? 0) < 60 ? 'normal' : 'success'}
             strokeColor={
-              record.battery < 30
+              (record.battery ?? 0) < 30
                 ? '#ff4d4f'
-                : record.battery < 60
+                : (record.battery ?? 0) < 60
                 ? '#faad14'
                 : '#52c41a'
             }
@@ -145,7 +147,7 @@ export default function DevicesPage() {
       title: 'Temperature',
       dataIndex: 'temperature',
       key: 'temperature',
-      render: (_dom: any, record: any) =>
+      render: (_: unknown, record: Device) =>
         typeof record.temperature === 'number' && !isNaN(record.temperature) ? (
           <span style={{ color: record.temperature > 25 ? '#ff4d4f' : '#52c41a' }}>
             {record.temperature.toFixed(1)}°C
@@ -163,7 +165,7 @@ export default function DevicesPage() {
       title: t('devices.firmware'),
       dataIndex: 'firmware',
       key: 'firmware',
-      render: (_dom: any, record: any) => <Tag>{record.firmware}</Tag>,
+      render: (_: unknown, record: Device) => <Tag>{record.firmware}</Tag>,
     },
     {
       title: t('common.actions'),

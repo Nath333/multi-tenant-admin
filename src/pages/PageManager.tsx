@@ -13,11 +13,33 @@ import {
 } from '@ant-design/icons';
 import * as Icons from '@ant-design/icons';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { usePagesStore } from '../store/pagesStore';
-import type { CustomPage } from '../store/pagesStore';
+import type { CustomPage, PageMode } from '../store/pagesStore';
 import { useNavigate } from 'react-router-dom';
+
+// Type definitions for component props
+interface SortablePageCardProps {
+  page: CustomPage;
+  onEdit: (page: CustomPage) => void;
+  onDelete: (id: string) => void;
+  onToggle: (id: string) => void;
+  onDuplicate: (page: CustomPage) => void;
+  onView: (id: string) => void;
+  onBuild: (id: string) => void;
+}
+
+interface PageFormValues {
+  name: string;
+  icon: string;
+  mode: PageMode;
+  enabled: boolean;
+}
+
+type FilterStatus = 'all' | 'active' | 'inactive';
+type ViewMode = 'list' | 'grid';
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -37,7 +59,7 @@ const IconComponent = ({ iconName }: { iconName: string }) => {
 };
 
 // Sortable Page Card Component with enhanced animations
-const SortablePageCard = ({ page, onEdit, onDelete, onToggle, onDuplicate, onView, onBuild }: any) => {
+const SortablePageCard = ({ page, onEdit, onDelete, onToggle, onDuplicate, onView, onBuild }: SortablePageCardProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: page.id });
   const [isHovering, setIsHovering] = useState(false);
 
@@ -275,7 +297,7 @@ export default function PageManager() {
       .sort((a, b) => a.order - b.order);
   }, [pages, searchTerm, filterStatus]);
 
-  const handleCreateOrUpdate = async (values: any) => {
+  const handleCreateOrUpdate = async (values: PageFormValues) => {
     // Simulate loading for better UX
     await new Promise(resolve => setTimeout(resolve, 300));
 
@@ -421,20 +443,20 @@ export default function PageManager() {
     setIsModalOpen(true);
   };
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (active.id !== over.id) {
-      const oldIndex = filteredPages.findIndex(p => p.id === active.id);
-      const newIndex = filteredPages.findIndex(p => p.id === over.id);
-      const newOrder = arrayMove(filteredPages, oldIndex, newIndex);
+    if (!over || active.id === over.id) return;
 
-      // Update order for all pages
-      newOrder.forEach((page, index) => {
-        updatePage(page.id, { order: index + 1 });
-      });
+    const oldIndex = filteredPages.findIndex(p => p.id === active.id);
+    const newIndex = filteredPages.findIndex(p => p.id === over.id);
+    const newOrder = arrayMove(filteredPages, oldIndex, newIndex);
 
-      message.success('Page order updated!');
-    }
+    // Update order for all pages
+    newOrder.forEach((page, index) => {
+      updatePage(page.id, { order: index + 1 });
+    });
+
+    message.success('Page order updated!');
   };
 
   const handleExport = () => {
@@ -452,24 +474,35 @@ export default function PageManager() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'application/json';
-    input.onchange = (e: any) => {
-      const file = e.target.files[0];
+    input.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      const file = target.files?.[0];
+      if (!file) return;
+
       const reader = new FileReader();
-      reader.onload = (event: any) => {
+      reader.onload = (event: ProgressEvent<FileReader>) => {
         try {
-          const importedPages = JSON.parse(event.target.result);
+          const result = event.target?.result;
+          if (typeof result !== 'string') return;
+
+          const importedPages = JSON.parse(result) as CustomPage[];
           if (Array.isArray(importedPages)) {
             importedPages.forEach(page => {
               createPage({
-                ...page,
-                id: undefined,
-                createdAt: undefined,
-                updatedAt: undefined,
-              } as any);
+                name: page.name,
+                path: page.path,
+                icon: page.icon,
+                mode: page.mode,
+                widgets: page.widgets,
+                order: page.order,
+                enabled: page.enabled,
+                description: page.description,
+                templateId: page.templateId,
+              });
             });
             message.success(`${importedPages.length} pages imported successfully!`);
           }
-        } catch (error) {
+        } catch {
           message.error('Failed to import pages. Invalid file format.');
         }
       };
@@ -670,7 +703,7 @@ export default function PageManager() {
                   { label: 'Inactive', value: 'inactive' },
                 ]}
                 value={filterStatus}
-                onChange={(value) => setFilterStatus(value as any)}
+                onChange={(value) => setFilterStatus(value as FilterStatus)}
               />
             </Col>
             <Col xs={12} md={6} lg={5}>
@@ -681,7 +714,7 @@ export default function PageManager() {
                   { label: <AppstoreOutlined />, value: 'grid', title: 'Grid View' },
                 ]}
                 value={viewMode}
-                onChange={(value) => setViewMode(value as any)}
+                onChange={(value) => setViewMode(value as ViewMode)}
               />
             </Col>
           </Row>

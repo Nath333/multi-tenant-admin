@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Tenant, User, UserRole } from '../types';
+import type { User, Tenant, UserRole } from '../types';
 
-// Re-export types for backward compatibility
-export type { Tenant, User } from '../types';
+// Re-export types for backwards compatibility
+export type { User, Tenant };
 
 interface AuthState {
   isAuthenticated: boolean;

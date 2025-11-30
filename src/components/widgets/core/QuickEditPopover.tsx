@@ -31,12 +31,12 @@ const COLOR_THEMES = [
   { label: 'Gradient', value: 'gradient', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
 ] as const;
 
-const BORDER_RADIUS_MARKS = {
+const BORDER_RADIUS_MARKS: Record<number, string> = {
   0: '0',
   8: '8',
   16: '16',
   24: '24',
-} as const;
+};
 
 export default function QuickEditPopover({
   widget,
