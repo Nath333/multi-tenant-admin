@@ -214,7 +214,7 @@ export default function WidgetLayout({
         enableDragAndDrop={editMode}
       />
 
-      <EnhancedWidgetConfigModal
+      <InlineWidgetConfigurator
         visible={configModalVisible}
         widget={editingWidget}
         onSave={handleSaveWidgetConfig}
