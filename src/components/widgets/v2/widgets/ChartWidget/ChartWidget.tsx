@@ -133,7 +133,7 @@ function ChartWidget({ title, config, onConfigChange, onRemove, editMode, classN
 
     // Transform data for charts
     const transformedData = Array.isArray(data)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       ? data.map((item: any, index: number) => ({
           name: item.timestamp ? new Date(item.timestamp).toLocaleTimeString() : `Point ${index + 1}`,
           value: item.value || item.current || 0,
