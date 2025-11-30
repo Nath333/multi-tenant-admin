@@ -119,7 +119,7 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
 
   const renderCellValue = (value: any, renderType: string) => {
     switch (renderType) {
-      case 'badge':
+      case 'badge': {
         const colorMap: Record<string, string> = {
           online: 'green',
           offline: 'red',
@@ -134,6 +134,7 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
           overdue: 'red',
         };
         return <Badge status="default" color={colorMap[value?.toLowerCase()] || 'default'} text={value} />;
+      }
 
       case 'progress':
         return <Progress percent={value || 0} size="small" />;
