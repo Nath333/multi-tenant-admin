@@ -29,6 +29,7 @@ function LightingControlWidget({ title, config, onConfigChange, onRemove, editMo
   const [loading, setLoading] = useState(false);
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule>({});
 
+  /* eslint-disable react-hooks/set-state-in-effect -- data fetching pattern is intentional */
   useEffect(() => {
     if (!config?.elements) return;
 
@@ -116,6 +117,7 @@ function LightingControlWidget({ title, config, onConfigChange, onRemove, editMo
       intervals.forEach(clearInterval);
     };
   }, [config?.elements]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleBrightnessChange = (zoneId: string, brightness: number) => {
     const zone = config?.elements?.find(z => z.id === zoneId);

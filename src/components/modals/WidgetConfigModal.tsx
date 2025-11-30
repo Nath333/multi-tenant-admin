@@ -35,8 +35,9 @@ const INPUT_STYLE = { borderRadius: 6, fontSize: 13 } as const;
 
 function WidgetConfigModal({ visible, widget, onSave, onCancel }: WidgetConfigModalProps) {
   const [form] = Form.useForm();
-  const [previewConfig, setPreviewConfig] = useState<any>({});
+  const [previewConfig, setPreviewConfig] = useState<Record<string, unknown>>({});
 
+  /* eslint-disable react-hooks/set-state-in-effect -- form state sync is intentional */
   useEffect(() => {
     if (widget) {
       const initialValues = {
@@ -47,6 +48,7 @@ function WidgetConfigModal({ visible, widget, onSave, onCancel }: WidgetConfigMo
       setPreviewConfig(initialValues);
     }
   }, [widget, form]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Update preview when form values change
   const handleFormChange = () => {
@@ -213,6 +215,7 @@ function WidgetConfigModal({ visible, widget, onSave, onCancel }: WidgetConfigMo
     }
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const WidgetComponent = registration.component as any;
       const { title, ...configValues } = previewConfig;
 

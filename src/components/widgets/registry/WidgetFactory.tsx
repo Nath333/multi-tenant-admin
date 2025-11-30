@@ -68,6 +68,7 @@ WidgetFactory.displayName = 'WidgetFactory';
 /**
  * Create a new widget instance with defaults
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function createWidgetInstance(
   widgetId: string,
   overrides?: Partial<WidgetInstance>
@@ -104,6 +105,7 @@ export function createWidgetInstance(
 /**
  * Validate widget instance
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function validateWidgetInstance(instance: WidgetInstance): {
   valid: boolean;
   errors: string[];
@@ -146,6 +148,7 @@ export function validateWidgetInstance(instance: WidgetInstance): {
 /**
  * Clone a widget instance
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function cloneWidgetInstance(instance: WidgetInstance): WidgetInstance {
   return {
     ...instance,
@@ -162,6 +165,7 @@ export function cloneWidgetInstance(instance: WidgetInstance): WidgetInstance {
 /**
  * Batch create widget instances
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function createWidgetInstances(
   configs: Array<{ widgetId: string; overrides?: Partial<WidgetInstance> }>
 ): WidgetInstance[] {

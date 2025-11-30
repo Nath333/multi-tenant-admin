@@ -226,7 +226,7 @@ export default function TenantsPage() {
         </Space>
       ),
     },
-  ], [t]);
+  ], [t, handleDeleteTenant, openEditModal]);
 
   return (
     <div style={PAGE_CONTAINER_STYLE}>

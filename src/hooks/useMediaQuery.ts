@@ -8,6 +8,7 @@ export function useMediaQuery(query: string): boolean {
     return false;
   });
 
+  /* eslint-disable react-hooks/set-state-in-effect -- initial state sync is intentional */
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -25,6 +26,7 @@ export function useMediaQuery(query: string): boolean {
       mediaQuery.removeEventListener('change', handleChange);
     };
   }, [query]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   return matches;
 }

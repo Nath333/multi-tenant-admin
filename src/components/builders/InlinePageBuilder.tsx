@@ -95,6 +95,7 @@ export default function InlinePageBuilder({ pageId }: InlinePageBuilderProps) {
   // Create widgetComponents map from registry
   const widgetComponents = useMemo(() => {
     const allWidgets = widgetRegistry.getAll();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const components: Record<string, React.ComponentType<any>> = {};
     allWidgets.forEach((registration) => {
       components[registration.metadata.id] = registration.component;
@@ -160,6 +161,7 @@ export default function InlinePageBuilder({ pageId }: InlinePageBuilderProps) {
       message.success('Widget updated successfully!');
     } else {
       const widgetType = widgetTypes.find(t => t.value === type);
+      /* eslint-disable react-hooks/purity -- ID generation in event handler is intentional */
       const newWidget: PageWidget = {
         id: `widget-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
         type: type,
@@ -172,6 +174,7 @@ export default function InlinePageBuilder({ pageId }: InlinePageBuilderProps) {
           h: widgetType?.size.h || 3,
         },
       };
+      /* eslint-enable react-hooks/purity */
 
       addWidgetToPage(page.id, newWidget);
       message.success('Widget added successfully!');

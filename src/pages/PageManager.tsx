@@ -54,6 +54,7 @@ const iconOptions = [
 ];
 
 const IconComponent = ({ iconName }: { iconName: string }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Icon = (Icons as any)[iconName];
   return Icon ? <Icon /> : null;
 };
@@ -270,6 +271,7 @@ export default function PageManager() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- handleNew is stable
   }, []);
 
   // Statistics

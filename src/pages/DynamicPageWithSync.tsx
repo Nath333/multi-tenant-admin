@@ -93,7 +93,8 @@ export default function DynamicPageWithSync() {
         initializedPageRef.current = '';
       }
     };
-  }, [page?.id, updateLayout]); // Only re-run when page ID changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-run when page ID changes
+  }, [page?.id, updateLayout]);
 
   // Bidirectional Sync: Watch widgetStore and sync to pagesStore
   const syncToPagesStore = useCallback(() => {

@@ -54,6 +54,7 @@ const getMemoizedPreview = (widgetId: string) => {
  * - Memoized component instances to prevent re-renders
  * - Two modes: 'thumbnail' for small previews, 'full' for detailed previews
  */
+/* eslint-disable react-hooks/static-components -- cached component pattern is intentional */
 export const CachedWidgetPreview = memo<CachedWidgetPreviewProps>(({
   widgetId,
   width = 300,
@@ -165,12 +166,14 @@ export const CachedWidgetPreview = memo<CachedWidgetPreviewProps>(({
     </div>
   );
 });
+/* eslint-enable react-hooks/static-components */
 
 CachedWidgetPreview.displayName = 'CachedWidgetPreview';
 
 /**
  * Clear the preview cache (useful for HMR or testing)
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const clearPreviewCache = () => {
   previewCache.clear();
 };
@@ -179,6 +182,7 @@ export const clearPreviewCache = () => {
  * Preload widget previews into cache
  * Useful for warming up cache on initial load
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const preloadWidgetPreviews = (widgetIds: string[]) => {
   widgetIds.forEach(widgetId => getMemoizedPreview(widgetId));
 };
@@ -186,6 +190,7 @@ export const preloadWidgetPreviews = (widgetIds: string[]) => {
 /**
  * Get cache statistics
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const getPreviewCacheStats = () => {
   return {
     size: previewCache.size,

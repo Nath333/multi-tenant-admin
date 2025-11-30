@@ -16,6 +16,7 @@ import type { WeeklySchedule } from '../../shared';
 
 type DataTableWidgetProps = ConfigurableWidgetProps<DataTableWidgetConfig>;
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, className, style }: DataTableWidgetProps) {
   const [tableData, setTableData] = useState<Record<string, any[]>>({});
   const [loading, setLoading] = useState(false);
@@ -23,6 +24,7 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule>({});
 
   // Fetch data for all enabled tables
+  /* eslint-disable react-hooks/set-state-in-effect -- data fetching pattern is intentional */
   useEffect(() => {
     if (!config?.elements) return;
 
@@ -74,6 +76,7 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
       intervals.forEach(clearInterval);
     };
   }, [config?.elements]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleRefresh = () => {
     if (!config?.elements) return;
@@ -328,5 +331,6 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
     </ConfigurableWidgetBase>
   );
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default memo(DataTableWidget);

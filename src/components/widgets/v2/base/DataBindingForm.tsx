@@ -25,6 +25,7 @@ export default function DataBindingForm({
 
   const handleDataSourceChange = (mockDataKey: string) => {
     const source = compatibleDataSources.find((s: MockDataSource) => s.key === mockDataKey);
+    /* eslint-disable react-hooks/purity -- ID generation in event handler is intentional */
     onChange({
       id: `binding-${Date.now()}`,
       name: source?.name || 'Data Source',
@@ -32,6 +33,7 @@ export default function DataBindingForm({
       mockDataKey,
       refreshInterval: value?.refreshInterval || 5000,
     });
+    /* eslint-enable react-hooks/purity */
   };
 
   const handleClear = () => {

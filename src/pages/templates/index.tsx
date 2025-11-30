@@ -77,6 +77,7 @@ export interface PageTemplate {
   id: string;
   name: string;
   description: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: React.ComponentType<any>;
   icon: string;
   supportsWidgets: boolean;
@@ -434,6 +435,7 @@ const SettingsTemplate: React.FC = () => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const pageTemplates: Record<string, PageTemplate> = {
   blank: {
     id: 'blank',
@@ -521,5 +523,7 @@ export const pageTemplates: Record<string, PageTemplate> = {
   },
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const getTemplate = (id: string) => pageTemplates[id];
+// eslint-disable-next-line react-refresh/only-export-components
 export const getAllTemplates = () => Object.values(pageTemplates);

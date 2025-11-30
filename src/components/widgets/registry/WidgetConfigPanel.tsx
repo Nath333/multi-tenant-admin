@@ -190,6 +190,7 @@ WidgetConfigPanel.displayName = 'WidgetConfigPanel';
 /**
  * Hook for managing widget configuration
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useWidgetConfig(widgetId: string, initialConfig?: Record<string, unknown>) {
   const registration = widgetRegistry.get(widgetId);
 

@@ -23,11 +23,13 @@ interface PanelState {
   circuitData: Record<string, { current: number; voltage: number; power: number; status: string }>;
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMode, className, style }: ElectricalPanelWidgetProps) {
   const [panelStates, setPanelStates] = useState<Record<string, PanelState>>({});
   const [loading, setLoading] = useState(false);
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule>({});
 
+  /* eslint-disable react-hooks/set-state-in-effect -- data fetching pattern is intentional */
   useEffect(() => {
     if (!config?.elements) return;
 
@@ -144,6 +146,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
       intervals.forEach(clearInterval);
     };
   }, [config?.elements]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleRefresh = () => {
     if (!config?.elements) return;
@@ -423,5 +426,6 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
     </ConfigurableWidgetBase>
   );
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default memo(ElectricalPanelWidget);

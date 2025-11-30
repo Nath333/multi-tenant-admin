@@ -68,6 +68,7 @@ export default function UsersPage() {
     []
   );
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- intentional dependency on specific properties
   const tenantUsers = useMemo<UserWithTenant[]>(() => {
     const filteredUsers = currentTenant?.id ? getUsersByTenant(currentTenant.id) : users;
     return filteredUsers.map((user) => ({
@@ -287,7 +288,7 @@ export default function UsersPage() {
         </Space>
       ),
     },
-  ], [t, statusFilters]);
+  ], [t, statusFilters, handleDeleteUser, handleToggleStatus, openEditModal]);
 
   return (
     <div style={PAGE_CONTAINER_STYLE}>

@@ -31,6 +31,7 @@ function HVACControlWidget({ title, config, onConfigChange, onRemove, editMode, 
   const [loading, setLoading] = useState(false);
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule>({});
 
+  /* eslint-disable react-hooks/set-state-in-effect -- data fetching pattern is intentional */
   useEffect(() => {
     if (!config?.elements) return;
 
@@ -124,6 +125,7 @@ function HVACControlWidget({ title, config, onConfigChange, onRemove, editMode, 
       intervals.forEach(clearInterval);
     };
   }, [config?.elements]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleTempChange = (unitId: string, temp: number) => {
     setUnitStates(prev => ({

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Form, Input, Switch, Slider, Button, Tooltip, Badge } from 'antd';
 import {
   SaveOutlined,
@@ -44,13 +44,14 @@ type ConfigSection = 'general' | 'appearance' | 'widget';
 
 function EnhancedWidgetConfigModal({ visible, widget, onSave, onCancel }: EnhancedWidgetConfigModalProps) {
   const [form] = Form.useForm();
-  const [previewConfig, setPreviewConfig] = useState<any>({});
+  const [previewConfig, setPreviewConfig] = useState<Record<string, unknown>>({});
   const [activeSection, setActiveSection] = useState<ConfigSection>('general');
   const [isAnimating, setIsAnimating] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- animation state sync is intentional */
   useEffect(() => {
     if (visible) {
       setIsAnimating(true);
@@ -79,6 +80,7 @@ function EnhancedWidgetConfigModal({ visible, widget, onSave, onCancel }: Enhanc
       setHasChanges(false);
     }
   }, [widget, form]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleFormChange = () => {
     const values = form.getFieldsValue();
@@ -101,11 +103,11 @@ function EnhancedWidgetConfigModal({ visible, widget, onSave, onCancel }: Enhanc
     });
   };
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     form.resetFields();
     setHasChanges(false);
     onCancel();
-  };
+  }, [form, onCancel]);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -122,7 +124,7 @@ function EnhancedWidgetConfigModal({ visible, widget, onSave, onCancel }: Enhanc
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [visible]);
+  }, [visible, handleCancel]);
 
   const sectionTabs = [
     {
@@ -273,9 +275,9 @@ function EnhancedWidgetConfigModal({ visible, widget, onSave, onCancel }: Enhanc
         <div className={styles.radiusPreview}>
           <div
             className={styles.radiusBox}
-            style={{ borderRadius: previewConfig.borderRadius || 8 }}
+            style={{ borderRadius: (previewConfig.borderRadius as number) || 8 }}
           />
-          <span>{previewConfig.borderRadius || 8}px radius</span>
+          <span>{(previewConfig.borderRadius as number) || 8}px radius</span>
         </div>
       </div>
     </div>
@@ -316,6 +318,7 @@ function EnhancedWidgetConfigModal({ visible, widget, onSave, onCancel }: Enhanc
     }
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const WidgetComponent = registration.component as any;
       const { title, ...configValues } = previewConfig;
 

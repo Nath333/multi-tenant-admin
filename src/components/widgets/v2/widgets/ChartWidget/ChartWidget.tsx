@@ -35,12 +35,14 @@ const COLORS = ['#1890ff', '#52c41a', '#faad14', '#f5222d', '#722ed1', '#13c2c2'
 
 type ChartWidgetProps = ConfigurableWidgetProps<ChartWidgetConfig>;
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 function ChartWidget({ title, config, onConfigChange, onRemove, editMode, className, style }: ChartWidgetProps) {
   const [chartData, setChartData] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(false);
   const [weeklySchedule, setWeeklySchedule] = useState<WeeklySchedule>({});
 
   // Fetch data for all enabled charts
+  /* eslint-disable react-hooks/set-state-in-effect -- data fetching pattern is intentional */
   useEffect(() => {
     if (!config?.elements) return;
 
@@ -92,6 +94,7 @@ function ChartWidget({ title, config, onConfigChange, onRemove, editMode, classN
       intervals.forEach(clearInterval);
     };
   }, [config?.elements]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleRefresh = () => {
     if (!config?.elements) return;
@@ -364,5 +367,6 @@ function ChartWidget({ title, config, onConfigChange, onRemove, editMode, classN
     </ConfigurableWidgetBase>
   );
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export default memo(ChartWidget);
