@@ -73,9 +73,9 @@ export interface WidgetLifecycleHooks {
   /** Called after widget mounts */
   onMounted?: () => Promise<void> | void;
   /** Called before widget updates */
-  onBeforeUpdate?: (prevProps: any, nextProps: any) => Promise<void> | void;
+  onBeforeUpdate?: (prevProps: unknown, nextProps: unknown) => Promise<void> | void;
   /** Called after widget updates */
-  onUpdated?: (prevProps: any, nextProps: any) => Promise<void> | void;
+  onUpdated?: (prevProps: unknown, nextProps: unknown) => Promise<void> | void;
   /** Called before widget unmounts */
   onBeforeUnmount?: () => Promise<void> | void;
   /** Called when widget data refreshes */
@@ -93,13 +93,13 @@ export interface WidgetLifecycleHooks {
  */
 export interface WidgetEventBus {
   /** Subscribe to widget events */
-  subscribe: (event: string, handler: (data: any) => void) => () => void;
+  subscribe: (event: string, handler: (data: unknown) => void) => () => void;
   /** Publish widget events */
-  publish: (event: string, data: any) => void;
+  publish: (event: string, data: unknown) => void;
   /** Subscribe to global events */
-  subscribeGlobal: (event: string, handler: (data: any) => void) => () => void;
+  subscribeGlobal: (event: string, handler: (data: unknown) => void) => () => void;
   /** Publish global events */
-  publishGlobal: (event: string, data: any) => void;
+  publishGlobal: (event: string, data: unknown) => void;
   /** Clear all event listeners */
   clear: () => void;
 }
@@ -139,12 +139,12 @@ export interface WidgetAnalytics {
   /** Custom event tracking */
   customEvents?: {
     event: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }[];
   /** Analytics provider */
   provider?: 'google' | 'mixpanel' | 'amplitude' | 'custom';
   /** Custom analytics handler */
-  onAnalyticsEvent?: (event: string, data: any) => void;
+  onAnalyticsEvent?: (event: string, data: unknown) => void;
 }
 
 /**
@@ -162,11 +162,11 @@ export interface WidgetStateSyncConfig {
   /** Conflict resolution strategy */
   conflictResolution?: 'lastWrite' | 'firstWrite' | 'merge' | 'custom';
   /** Custom sync handler */
-  onSync?: (localState: any, remoteState: any) => any;
+  onSync?: (localState: unknown, remoteState: unknown) => unknown;
   /** State transformation before sync */
-  transformBeforeSync?: (state: any) => any;
+  transformBeforeSync?: (state: unknown) => unknown;
   /** State transformation after sync */
-  transformAfterSync?: (state: any) => any;
+  transformAfterSync?: (state: unknown) => unknown;
 }
 
 /**
@@ -184,13 +184,13 @@ export interface WidgetConfigSchema {
     type: 'string' | 'number' | 'boolean' | 'array' | 'object';
     title?: string;
     description?: string;
-    default?: any;
-    enum?: any[];
+    default?: unknown;
+    enum?: unknown[];
     minimum?: number;
     maximum?: number;
     pattern?: string;
-    items?: any;
-    properties?: any;
+    items?: unknown;
+    properties?: unknown;
   }>;
   /** Additional properties allowed */
   additionalProperties?: boolean;
@@ -343,7 +343,7 @@ export type WidgetStatus = 'success' | 'warning' | 'error' | 'processing' | 'def
 /**
  * Widget data state for data fetching hooks with advanced caching
  */
-export interface WidgetDataState<T = any> {
+export interface WidgetDataState<T = unknown> {
   data: T | null;
   loading: boolean;
   error: Error | null;
