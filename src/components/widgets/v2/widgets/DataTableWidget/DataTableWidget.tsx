@@ -117,6 +117,7 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
     URL.revokeObjectURL(url);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderCellValue = (value: any, renderType: string) => {
     switch (renderType) {
       case 'badge': {
@@ -166,10 +167,12 @@ function DataTableWidget({ title, config, onConfigChange, onRemove, editMode, cl
         if (typeof aVal === 'string') return aVal.localeCompare(bVal);
         return aVal - bVal;
       } : undefined,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (value: any) => renderCellValue(value, col.render || 'text'),
     }));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getFilteredData = (tableId: string, data: any[]) => {
     const search = searchText[tableId]?.toLowerCase();
     if (!search) return data;

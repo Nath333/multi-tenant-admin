@@ -130,6 +130,7 @@ function ChartWidget({ title, config, onConfigChange, onRemove, editMode, classN
 
     // Transform data for charts
     const transformedData = Array.isArray(data)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ? data.map((item: any, index: number) => ({
           name: item.timestamp ? new Date(item.timestamp).toLocaleTimeString() : `Point ${index + 1}`,
           value: item.value || item.current || 0,
@@ -198,7 +199,7 @@ function ChartWidget({ title, config, onConfigChange, onRemove, editMode, classN
                 outerRadius={80}
                 label
               >
-                {transformedData.slice(0, 8).map((_: any, index: number) => (
+                {transformedData.slice(0, 8).map((_: unknown, index: number) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

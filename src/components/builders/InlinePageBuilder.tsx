@@ -145,7 +145,7 @@ export default function InlinePageBuilder({ pageId }: InlinePageBuilderProps) {
     updatePage(page.id, { widgets: updatedWidgets });
   };
 
-  const handleAddOrUpdateWidget = (values: any) => {
+  const handleAddOrUpdateWidget = (values: { type: string; title: string; config?: Record<string, unknown> }) => {
     const { type, title, config } = values;
     // Merge user-provided config with defaults
     const defaultConfig = getWidgetMockData(type, currentTenant?.id);
@@ -346,7 +346,7 @@ export default function InlinePageBuilder({ pageId }: InlinePageBuilderProps) {
                     <WidgetComponent
                       config={widgetConfig}
                       title={widget.title}
-                      onConfigChange={(newConfig: any) => {
+                      onConfigChange={(newConfig: Record<string, unknown>) => {
                         updateWidgetInPage(page.id, widget.id, { config: newConfig });
                       }}
                       editMode={true}
