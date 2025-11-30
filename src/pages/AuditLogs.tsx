@@ -173,7 +173,7 @@ const AuditLogs: React.FC = () => {
             <Statistic
               title="Successful"
               value={successfulLogs}
-              styles={{ content: { color: '#3f8600' } }}
+              valueStyle={{ color: '#3f8600' }}
               prefix={<CheckCircleOutlined />}
             />
           </Card>
@@ -183,7 +183,7 @@ const AuditLogs: React.FC = () => {
             <Statistic
               title="Failed"
               value={failedLogs}
-              styles={{ content: { color: '#cf1322' } }}
+              valueStyle={{ color: '#cf1322' }}
               prefix={<CloseCircleOutlined />}
             />
           </Card>
@@ -200,7 +200,7 @@ const AuditLogs: React.FC = () => {
       </Row>
 
       <Card>
-        <Space orientation="vertical" style={{ width: '100%' }} size="large">
+        <Space direction="vertical" style={{ width: '100%' }} size="large">
           <Space wrap style={{ width: '100%', justifyContent: 'space-between' }}>
             <Space wrap>
               <Input

@@ -144,7 +144,7 @@ const SortablePageCard = ({ page, onEdit, onDelete, onToggle, onDuplicate, onVie
           </Col>
 
           <Col flex="auto">
-            <Space orientation="vertical" size={4} style={{ width: '100%' }}>
+            <Space direction="vertical" size={4} style={{ width: '100%' }}>
               <Space>
                 <Text strong style={{ fontSize: 16 }}>{page.name}</Text>
                 <Tag color={page.enabled ? 'success' : 'default'} icon={page.enabled ? <CheckCircleOutlined /> : <CloseCircleOutlined />}>
@@ -593,7 +593,7 @@ export default function PageManager() {
                 title="Total Pages"
                 value={stats.totalPages}
                 prefix={<FileTextOutlined />}
-                styles={{ content: { color: '#1890ff', fontWeight: 600 } }}
+                valueStyle={{ color: '#1890ff', fontWeight: 600 }}
               />
             </Card>
           </Col>
@@ -619,7 +619,7 @@ export default function PageManager() {
                 title="Active Pages"
                 value={stats.activePages}
                 prefix={<CheckCircleOutlined />}
-                styles={{ content: { color: '#52c41a', fontWeight: 600 } }}
+                valueStyle={{ color: '#52c41a', fontWeight: 600 }}
               />
             </Card>
           </Col>
@@ -645,7 +645,7 @@ export default function PageManager() {
                 title="Total Widgets"
                 value={stats.totalWidgets}
                 prefix={<AppstoreOutlined />}
-                styles={{ content: { color: '#722ed1', fontWeight: 600 } }}
+                valueStyle={{ color: '#722ed1', fontWeight: 600 }}
               />
             </Card>
           </Col>
@@ -671,7 +671,7 @@ export default function PageManager() {
                 title="Hybrid Pages"
                 value={stats.hybridPages}
                 prefix={<BarChartOutlined />}
-                styles={{ content: { color: '#fa8c16', fontWeight: 600 } }}
+                valueStyle={{ color: '#fa8c16', fontWeight: 600 }}
               />
             </Card>
           </Col>
@@ -813,7 +813,7 @@ export default function PageManager() {
           <Row gutter={16}>
             <Col span={24}>
               <Alert
-                title={editingPage ? "Update Page Settings" : "Create Your Custom Page"}
+                message={editingPage ? "Update Page Settings" : "Create Your Custom Page"}
                 description={
                   editingPage
                     ? "Update your page configuration. Changes will be reflected immediately."
@@ -934,7 +934,7 @@ export default function PageManager() {
         width={500}
       >
         <div style={{ padding: '16px 0' }}>
-          <Space orientation="vertical" size={20} style={{ width: '100%' }}>
+          <Space direction="vertical" size={20} style={{ width: '100%' }}>
             <Row align="middle">
               <Col span={6}>
                 <Tag color="blue" style={{ fontFamily: 'monospace', fontSize: 15, padding: '4px 12px' }}>N</Tag>
@@ -969,7 +969,7 @@ export default function PageManager() {
             </Row>
             <Divider style={{ margin: '16px 0' }} />
             <Alert
-              title="Pro Tip"
+              message="Pro Tip"
               description="Use these shortcuts to navigate faster and boost your productivity!"
               type="info"
               showIcon

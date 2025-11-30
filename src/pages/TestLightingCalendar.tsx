@@ -66,7 +66,7 @@ const TestLightingCalendar = () => {
 
   return (
     <div style={{ padding: 24, background: '#f5f5f5', minHeight: '100vh' }}>
-      <Space orientation="vertical" size="large" style={{ width: '100%' }}>
+      <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <Card>
           <Title level={2}>🌟 Ultra-Modern Weekly Calendar Demo</Title>
           <Paragraph>

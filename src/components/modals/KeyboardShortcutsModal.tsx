@@ -43,7 +43,7 @@ export default function KeyboardShortcutsModal({ visible, onClose }: KeyboardSho
             <div style={{ marginBottom: 12, fontSize: 15, fontWeight: 600, color: '#667eea' }}>
               Navigation
             </div>
-            <Space orientation="vertical" size={12} style={{ width: '100%' }}>
+            <Space direction="vertical" size={12} style={{ width: '100%' }}>
               {[
                 { keys: ['Ctrl', 'E'], desc: 'Toggle edit mode' },
                 { keys: ['Ctrl', 'K'], desc: 'Open widget catalog' },

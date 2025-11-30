@@ -98,7 +98,7 @@ const ConfigNumber = ({
 );
 
 const ConfigSection = ({ title }: { title: string }) => (
-  <Divider titlePlacement="left">{title}</Divider>
+  <Divider orientation="left">{title}</Divider>
 );
 
 // ============================================================================
@@ -181,7 +181,7 @@ function LightingControlWidgetConfigForm() {
       <ConfigSwitch label="Show Schedule" name={['config', 'showSchedule']} />
       <ConfigSwitch label="Show Energy Usage" name={['config', 'showEnergyUsage']} />
 
-      <Divider titlePlacement="left">Lighting Zones</Divider>
+      <Divider orientation="left">Lighting Zones</Divider>
       <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 16 }}>
         Configure individual lighting zones. Each zone can be controlled independently.
       </Text>
@@ -469,7 +469,7 @@ function ElectricalPanelWidgetConfigForm() {
       <ConfigSwitch label="Show Alerts" name={['config', 'showAlerts']} initialValue={true} />
       <ConfigSwitch label="Show Power Factor" name={['config', 'showPowerFactor']} initialValue={true} />
 
-      <Divider titlePlacement="left">Circuit Breakers</Divider>
+      <Divider orientation="left">Circuit Breakers</Divider>
       <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 16 }}>
         Configure individual circuit breakers for this electrical panel. Each circuit can be monitored independently.
       </Text>
@@ -576,7 +576,7 @@ function WaterManagementWidgetConfigForm() {
       <ConfigSwitch label="Show Consumption Data" name={['config', 'showConsumption']} initialValue={true} />
       <ConfigSwitch label="Show Water Quality" name={['config', 'showQuality']} initialValue={true} />
 
-      <Divider titlePlacement="left">Water Tanks</Divider>
+      <Divider orientation="left">Water Tanks</Divider>
       <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 16 }}>
         Configure water storage tanks. Monitor levels, flow rates, and quality.
       </Text>
@@ -647,7 +647,7 @@ function WaterManagementWidgetConfigForm() {
         )}
       </Form.List>
 
-      <Divider titlePlacement="left">Water Pumps</Divider>
+      <Divider orientation="left">Water Pumps</Divider>
       <Form.List name={['config', 'pumps']}>
         {(fields, { add, remove }) => (
           <>
@@ -723,7 +723,7 @@ function FireSafetyWidgetConfigForm() {
       <ConfigSwitch label="Show Emergency Systems" name={['config', 'showEmergencySystems']} initialValue={true} />
       <ConfigSwitch label="Show Recent Events" name={['config', 'showRecentEvents']} initialValue={true} />
 
-      <Divider titlePlacement="left">Fire Safety Zones</Divider>
+      <Divider orientation="left">Fire Safety Zones</Divider>
       <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 16 }}>
         Configure fire safety zones with detectors, sprinklers, and pull stations.
       </Text>
@@ -838,7 +838,7 @@ function SecurityControlWidgetConfigForm() {
       <ConfigSwitch label="Show Alerts" name={['config', 'showAlerts']} initialValue={true} />
       <ConfigSwitch label="Show Sensor Status" name={['config', 'showSensorStatus']} initialValue={true} />
 
-      <Divider titlePlacement="left">Security Zones</Divider>
+      <Divider orientation="left">Security Zones</Divider>
       <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 16 }}>
         Configure security zones with sensors and cameras.
       </Text>

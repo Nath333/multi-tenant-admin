@@ -43,7 +43,7 @@ export default function WidgetPreviewDrawer({
         </div>
       }
       placement="right"
-      size={680}
+      width={680}
       open={visible}
       onClose={onClose}
       styles={{

@@ -274,7 +274,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
                 title="Load"
                 value={state.totalLoad.toFixed(1)}
                 suffix={`/ ${panel.totalCapacity}A`}
-                styles={{ content: { color: loadColor, fontSize: 18 } }}
+                valueStyle={{ color: loadColor, fontSize: 18 }}
               />
               <Progress
                 percent={loadPercent}
@@ -288,14 +288,14 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
                 title="Voltage"
                 value={state.voltage.toFixed(1)}
                 suffix="V"
-                styles={{ content: { fontSize: 18 } }}
+                valueStyle={{ fontSize: 18 }}
               />
             </Col>
             <Col span={8}>
               <Statistic
                 title="Power Factor"
                 value={state.powerFactor.toFixed(2)}
-                styles={{ content: { fontSize: 18 } }}
+                valueStyle={{ fontSize: 18 }}
               />
             </Col>
           </Row>

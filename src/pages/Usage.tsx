@@ -109,7 +109,7 @@ const Usage: React.FC = () => {
                   body: { padding: 24 },
                 }}
               >
-                <Space vertical style={{ width: '100%' }} size={16}>
+                <Space direction="vertical" style={{ width: '100%' }} size={16}>
                   <Space style={{ width: '100%', justifyContent: 'space-between' }}>
                     <Space>
                       <div style={{
@@ -136,12 +136,10 @@ const Usage: React.FC = () => {
                   <Statistic
                     value={item.current}
                     suffix={`/ ${item.limit === -1 ? '∞' : item.limit}`}
-                    styles={{
-                      content: {
-                        color: item.color,
-                        fontSize: 26,
-                        fontWeight: 700,
-                      },
+                    valueStyle={{
+                      color: item.color,
+                      fontSize: 26,
+                      fontWeight: 700,
                     }}
                   />
                   <Progress
@@ -203,7 +201,7 @@ const Usage: React.FC = () => {
               header: CARD_HEAD_STYLE,
             }}
           >
-            <Space orientation="vertical" style={{ width: '100%' }}>
+            <Space direction="vertical" style={{ width: '100%' }}>
               <div>
                 <Text strong>Current Plan:</Text>
                 <br />
