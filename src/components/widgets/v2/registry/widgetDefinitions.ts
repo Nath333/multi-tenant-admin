@@ -334,7 +334,7 @@ export const getAllWidgetDefinitions = (): WidgetDefinition[] => {
   return Object.values(WIDGET_DEFINITIONS);
 };
 
-export const getDefaultConfig = (type: string): any => {
+export const getDefaultConfig = (type: string): Record<string, unknown> => {
   const definition = getWidgetDefinition(type);
   return definition ? { ...definition.defaultConfig } : {};
 };

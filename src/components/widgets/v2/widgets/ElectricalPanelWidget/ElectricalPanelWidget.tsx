@@ -52,7 +52,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
                 };
               });
 
-              const totalLoad = Object.values(circuitData).reduce((sum: number, c: any) => sum + c.current, 0);
+              const totalLoad = Object.values(circuitData).reduce((sum: number, c: { current: number }) => sum + c.current, 0);
 
               newStates[panel.id] = {
                 totalLoad,
@@ -83,7 +83,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
               };
             });
 
-            const totalLoad = Object.values(circuitData).reduce((sum: number, c: any) => sum + c.current, 0);
+            const totalLoad = Object.values(circuitData).reduce((sum: number, c: { current: number }) => sum + c.current, 0);
 
             newStates[panel.id] = {
               totalLoad,
@@ -121,7 +121,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
               };
             });
 
-            const totalLoad = Object.values(circuitData).reduce((sum: number, c: any) => sum + c.current, 0);
+            const totalLoad = Object.values(circuitData).reduce((sum: number, c: { current: number }) => sum + c.current, 0);
 
             setPanelStates(prev => ({
               ...prev,
@@ -205,7 +205,7 @@ function ElectricalPanelWidget({ title, config, onConfigChange, onRemove, editMo
             };
           });
 
-          const totalLoad = Object.values(circuitData).reduce((sum: number, c: any) => sum + c.current, 0);
+          const totalLoad = Object.values(circuitData).reduce((sum: number, c: { current: number }) => sum + c.current, 0);
 
           newStates[panel.id] = {
             totalLoad,
