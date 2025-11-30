@@ -216,7 +216,7 @@ export default function ElectricalPanelConfigPanel({ config, onChange, onClose }
         <Form layout="vertical">
           <LayoutSelector<'single' | 'multi'>
             value={safeConfig.layout}
-            onChange={(layout) => handleUpdateGlobalSettings({ layout })}
+            onChange={(layout) => handleUpdateGlobal({ layout })}
             options={['single', 'multi']}
           />
 

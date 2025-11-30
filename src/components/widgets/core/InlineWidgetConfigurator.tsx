@@ -70,7 +70,7 @@ export default function InlineWidgetConfigurator({
     if (!registration) return <div className={styles.errorPreview}>Widget not found</div>;
 
     try {
-      const WidgetComponent = registration.component as React.ComponentType<Record<string, unknown>>;
+      const WidgetComponent = registration.component as unknown as React.ComponentType<Record<string, unknown>>;
       const { title, ...configValues } = previewConfig;
       return (
         <WidgetComponent

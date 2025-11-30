@@ -61,6 +61,7 @@ export interface ChartWidgetConfig {
   gridColumns?: number;
   height?: number;
   timeRange?: '1h' | '24h' | '7d' | '30d';
+  [key: string]: unknown;
 }
 
 // ============================================================================
@@ -76,6 +77,7 @@ export interface TableColumnConfig {
   filterable: boolean;
   render?: 'text' | 'badge' | 'progress' | 'date' | 'number' | 'boolean';
   color?: string;
+  [key: string]: unknown;
 }
 
 export interface TableElementConfig extends BaseElementConfig {
@@ -90,6 +92,7 @@ export interface TableElementConfig extends BaseElementConfig {
 export interface DataTableWidgetConfig {
   elements: TableElementConfig[];
   defaultView?: string;  // Which table to show by default
+  [key: string]: unknown;
 }
 
 // ============================================================================
@@ -121,6 +124,7 @@ export interface LightingControlWidgetConfig {
   showSchedules: boolean;
   showOccupancy: boolean;
   layout: 'list' | 'grid' | 'compact';
+  [key: string]: unknown;
 }
 
 // ============================================================================
@@ -150,6 +154,7 @@ export interface HVACControlWidgetConfig {
   showSchedules: boolean;
   showDiagnostics: boolean;
   layout: 'list' | 'grid' | 'zones';
+  [key: string]: unknown;
 }
 
 // ============================================================================
@@ -164,6 +169,7 @@ export interface CircuitConfig {
   phase: 'A' | 'B' | 'C' | '3-phase';
   enabled: boolean;
   critical: boolean;
+  [key: string]: unknown;
 }
 
 export interface ElectricalPanelConfig extends BaseElementConfig {
@@ -184,6 +190,7 @@ export interface ElectricalPanelWidgetConfig {
   showAlerts: boolean;
   showEnergyMetrics: boolean;
   layout: 'single' | 'multi';
+  [key: string]: unknown;
 }
 
 // ============================================================================

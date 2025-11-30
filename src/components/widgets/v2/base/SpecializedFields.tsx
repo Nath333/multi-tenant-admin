@@ -70,8 +70,9 @@ export function LayoutSelector<T extends string = LayoutType>({
   options = ['grid', 'tabs', 'carousel'] as T[],
   disabled = false,
   className,
+  labels,
 }: LayoutSelectorProps<T>) {
-  const layoutLabels: Record<string, string> = {
+  const defaultLabels: Record<string, string> = {
     grid: 'Grid',
     tabs: 'Tabs',
     carousel: 'Carousel',

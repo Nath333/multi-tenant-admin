@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Form, Input, Select, Switch, Slider, Button, Tooltip, Badge } from 'antd';
+import { Form, Input, Switch, Slider, Button, Tooltip, Badge } from 'antd';
 import {
   SaveOutlined,
   CloseOutlined,
@@ -23,7 +23,6 @@ interface EnhancedWidgetConfigModalProps {
   onCancel: () => void;
 }
 
-const { Option } = Select;
 
 const COLOR_THEMES = [
   { label: 'Blue', value: 'blue', color: '#1890ff' },
@@ -335,7 +334,7 @@ function EnhancedWidgetConfigModal({ visible, widget, onSave, onCancel }: Enhanc
           </div>
         </div>
       );
-    } catch (error) {
+    } catch {
       return (
         <div className={styles.errorPreview}>
           <div className={styles.errorIcon}>❌</div>
